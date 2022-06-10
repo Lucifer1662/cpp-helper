@@ -183,7 +183,7 @@ export async function CreateMoveImpl(onlySelection: boolean): Promise<MoveImpl> 
             symbols = findElligbleTokens(await GetSymbolsDoc(source), source);
         }
 
-
+        console.log({ symbols: await GetSymbolsDoc(source) })
         const uri = source.uri.path.substring(0, source.uri.path.lastIndexOf(".")) + ".cpp";
         return new MoveImpl(source, uri, symbols);
     } else

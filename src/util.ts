@@ -53,5 +53,11 @@ export function ActivePos() {
 
 export function IsHeader(document: vscode.TextDocument): boolean {
     return document.fileName.endsWith(".h");
-  }
-  
+}
+
+
+
+export function RemoveSemi(statement: string): string {
+    return statement.substring(0, statement.lastIndexOf(';'));
+}
+

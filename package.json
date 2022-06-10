@@ -11,10 +11,11 @@
   ],
   "activationEvents": [
     "onCommand:cpp-helper.moveImplementation",
-    "onCommand:cpp-helper.moveAllImplementation"
+    "onCommand:cpp-helper.moveAllImplementation",
+    "onCommand:cpp-helper.createConstructor"
   ],
   "main": "./out/extension.js",
-  "contributes": {
+  "contributes": { 
     "commands": [
       {
         "command": "cpp-helper.moveImplementation",
@@ -23,6 +24,10 @@
       {
         "command": "cpp-helper.moveAllImplementation",
         "title": "Move All Implementation to cpp"
+      },
+      {
+        "command": "cpp-helper.createConstructor",
+        "title": "Generate constructor"
       }
     ],
     "menus": {
@@ -35,6 +40,11 @@
         {
           "when": "resourceLangId == cpp",
           "command": "cpp-helper.moveAllImplementation",
+          "group": "YourGroup@1"
+        },
+        {
+          "when": "resourceLangId == cpp",
+          "command": "cpp-helper.createConstructor",
           "group": "YourGroup@1"
         }
       ]
