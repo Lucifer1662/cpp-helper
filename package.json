@@ -1,0 +1,66 @@
+{
+  "name": "cpp-helper",
+  "displayName": "cpp_helper",
+  "description": "helps write cpp code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.65.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:cpp-helper.moveImplementation",
+    "onCommand:cpp-helper.moveAllImplementation"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "cpp-helper.moveImplementation",
+        "title": "Move Implementation to cpp"
+      },
+      {
+        "command": "cpp-helper.moveAllImplementation",
+        "title": "Move All Implementation to cpp"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceLangId == cpp",
+          "command": "cpp-helper.moveImplementation",
+          "group": "YourGroup@1"
+        },
+        {
+          "when": "resourceLangId == cpp",
+          "command": "cpp-helper.moveAllImplementation",
+          "group": "YourGroup@1"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.67.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.0",
+    "@typescript-eslint/parser": "^5.27.0",
+    "@vscode/test-electron": "^2.1.3",
+    "eslint": "^8.16.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.2"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^7.0.0"  }
+}
