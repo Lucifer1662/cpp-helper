@@ -97,3 +97,31 @@ export function GetBody(s: Symbol): vscode.Range | undefined {
 export function IsFunctionDecOrImpl(content: string) {
     return content.endsWith(";");
 }
+
+
+export function findDeepestClassToken(
+    symbols: vscode.DocumentSymbol[],
+    pos: vscode.Position,
+): vscode.DocumentSymbol | undefined {
+    if (symbols.length === 0)
+        return undefined;
+
+    return symbols.map((symbol) => {
+        if (symbol.range.contains(pos)) {
+            const deeperClass = findDeepestClassToken(symbol.children, pos);
+            if (deeperClass)
+                return deeperClass;
+            else if (symbol.kind === 4) {
+                console.log({ found: symbol })
+                return symbol
+            }
+        }
+        return undefined;
+    }).filter((s) => s !== undefined)[0];
+}
+
+
+export function GetAttributes(classSymbol: vscode.DocumentSymbol) {
+    return classSymbol.children.filter(s => s.kind === 7);
+}
+

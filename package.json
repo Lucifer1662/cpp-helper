@@ -1,10 +1,11 @@
 {
-  "name": "cpp-helper",
-  "displayName": "cpp_helper",
+  "name": "Cpp-helper",
+  "displayName": "C++ helper",
   "description": "helps write cpp code",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "repository": "https://github.com/Lucifer1662/cpp-helper",
   "engines": {
-    "vscode": "^1.65.0"
+    "vscode": "^1.67.0"
   },
   "categories": [
     "Other"
@@ -12,7 +13,8 @@
   "activationEvents": [
     "onCommand:cpp-helper.moveImplementation",
     "onCommand:cpp-helper.moveAllImplementation",
-    "onCommand:cpp-helper.createConstructor"
+    "onCommand:cpp-helper.createConstructor",
+    "onCommand:cpp-helper.createDeafultConstructors"
   ],
   "main": "./out/extension.js",
   "contributes": { 
@@ -28,6 +30,10 @@
       {
         "command": "cpp-helper.createConstructor",
         "title": "Generate constructor"
+      },
+      {
+        "command": "cpp-helper.createDeafultConstructors",
+        "title": "Generate Default Constructors"
       }
     ],
     "menus": {
@@ -45,6 +51,11 @@
         {
           "when": "resourceLangId == cpp",
           "command": "cpp-helper.createConstructor",
+          "group": "YourGroup@1"
+        },
+        {
+          "when": "resourceLangId == cpp",
+          "command": "cpp-helper.createDeafultConstructors",
           "group": "YourGroup@1"
         }
       ]
