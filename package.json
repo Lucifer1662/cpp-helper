@@ -1,9 +1,10 @@
 {
-  "name": "Cpp-helper",
+  "name": "lukes-cpp-helper",
   "displayName": "C++ helper",
   "description": "helps write cpp code",
   "version": "1.0.0",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
+  "publisher": "personal-luke",
   "engines": {
     "vscode": "^1.67.0"
   },
