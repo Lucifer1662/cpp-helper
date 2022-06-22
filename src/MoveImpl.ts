@@ -114,7 +114,7 @@ class MoveImpl {
             });
 
             let mid = full.indexOf(symbol.symbol.name);
-            content = full.substring(0, mid) + content + full.substring(mid);
+            content = "\n\n" + full.substring(0, mid) + content + full.substring(mid);
 
             content += "\n\n";
 
@@ -207,9 +207,8 @@ function InsertionPosition(document: vscode.TextDocument, symbols: vscode.Docume
     var ret = findDeepestNamespace(symbols, scopes);
 
     if (!ret) {
-        const end = document.positionAt(document.getText(undefined).length);
         return {
-            insertAt: document.positionAt(document.offsetAt(end) - 1),
+            insertAt: new vscode.Position(document.lineCount+1, 0),
             scopeUnFinished: scopes
         };
     } else {
