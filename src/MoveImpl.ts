@@ -113,7 +113,7 @@ class MoveImpl {
                 content += s + "::";
             });
 
-            let mid = full.indexOf(symbol.symbol.name);
+            let mid = full.indexOf(this.source.getText(symbol.symbol.selectionRange));
             content = "\n\n" + full.substring(0, mid) + content + full.substring(mid);
 
             content += "\n\n";
