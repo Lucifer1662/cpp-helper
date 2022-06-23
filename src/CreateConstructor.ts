@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { findDeepestClassToken, GetAttributes } from "./Symbol";
+import { findDeepestClassTokenWithScope, GetAttributes } from "./Symbol";
 import { ActiveDoc, GetSymbolsDoc, ActivePos, RemoveSemi } from './util';
 
 
@@ -10,6 +10,7 @@ class CreateConstructor {
     selection: vscode.Position;
     workEdits = new vscode.WorkspaceEdit();
     classSymbol?: vscode.DocumentSymbol;
+    classScope: string = "";
     attributes: vscode.DocumentSymbol[] = [];
 
 
@@ -21,28 +22,64 @@ class CreateConstructor {
         this.source = source;
         this.srcSymbols = srcSymbols;
         this.selection = selection;
-        this.classSymbol = findDeepestClassToken(srcSymbols, selection);
-        if (this.classSymbol)
+        let deepClass = findDeepestClassTokenWithScope(srcSymbols, selection);
+        if (deepClass) {
+            this.classSymbol = deepClass[0];
+            deepClass[1].push(this.classSymbol.name);
+            this.classScope = deepClass[1].reduce((l, r) => l + "::" + r) + "::";
             this.attributes = GetAttributes(this.classSymbol);
+            this.attributes = this.attributes.sort((l,r)=>this.source.offsetAt(l.range.start)-this.source.offsetAt(r.range.start))
+        }
     }
 
-    GetContent(symbol: vscode.DocumentSymbol) {
-        return this.source.getText(symbol.range);
+
+    async GetContent(symbol: vscode.DocumentSymbol) {
+        const p = ActivePos();
+        if (p) {
+            let hints = await vscode.commands.executeCommand(
+                "vscode.executeHoverProvider",
+                this.source.uri,
+                symbol.selectionRange.start
+            );
+
+
+            try {
+                //@ts-ignore
+                let content: string[] = hints.map(h => h.contents.map(w => w.value).filter(w => w.startsWith("```cpp"))).reduce((l, r) => [...l, ...r]);
+                if (content.length > 0) {
+                    return content[0].replace("```cpp\n", "").replace("\n```", "").replace(this.classScope, "");
+                }
+            } catch (e) {}
+                const text = this.source.getText(symbol.range);
+                return text.replace(";", "");;
+        }
+
+    }
+
+    async GetContents() {
+        let contents: string[] = []
+        for (let i = 0; i < this.attributes.length; i++) {
+            const c = await this.GetContent(this.attributes[i])
+            if(c)
+                contents.push(c);
+        }
+        return contents;
     }
 
 
-    private CreateConstructor() {
+    private async CreateConstructor() {
         if (this.classSymbol) {
             var content = "";
             content += this.classSymbol.name
             content += "("
 
-            this.attributes.forEach((atrib, index) => {
-                content += RemoveSemi(this.GetContent(atrib));
+
+            const variables: string[] = await this.GetContents()
+
+            variables.forEach((variable, index) => {
+                content += variable;
                 if (index != this.attributes.length - 1) {
                     content += ","
-                    content += "\n"
-
                 }
             })
 
@@ -54,7 +91,7 @@ class CreateConstructor {
 
 
             this.attributes.forEach((atrib, index) => {
-                content += `${atrib.name}(${atrib.name})`; 
+                content += `${atrib.name}(${atrib.name})`;
                 if (index != this.attributes.length - 1) {
                     content += "\n"
                     content += ","
@@ -74,7 +111,7 @@ class CreateConstructor {
         //create new work edits
         this.workEdits = new vscode.WorkspaceEdit();
 
-        this.CreateConstructor();
+        await this.CreateConstructor();
 
         //apply edits
         vscode.workspace.applyEdit(this.workEdits);

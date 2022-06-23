@@ -120,6 +120,28 @@ export function findDeepestClassToken(
     }).filter((s) => s !== undefined)[0];
 }
 
+export function findDeepestClassTokenWithScope(
+    symbols: vscode.DocumentSymbol[],
+    pos: vscode.Position,
+    scope: string [] = []
+): [vscode.DocumentSymbol, string[]] | undefined {
+    if (symbols.length === 0)
+        return undefined;
+
+    return symbols.map((symbol) => {
+        if (symbol.range.contains(pos)) {
+            const deeperClass = findDeepestClassTokenWithScope(symbol.children, pos, [...scope, symbol.name]);
+            if (deeperClass)
+                return deeperClass;
+            else if (symbol.kind === 4) {
+                console.log({ found: symbol })
+                return [symbol, scope] as [vscode.DocumentSymbol, string[]];
+            }
+        }
+        return undefined;
+    }).filter((s) => s !== undefined)[0];
+}
+
 
 export function GetAttributes(classSymbol: vscode.DocumentSymbol) {
     return classSymbol.children.filter(s => s.kind === 7);
