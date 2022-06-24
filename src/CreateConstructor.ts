@@ -46,8 +46,9 @@ class CreateConstructor {
             try {
                 //@ts-ignore
                 let content: string[] = hints.map(h => h.contents.map(w => w.value).filter(w => w.startsWith("```cpp"))).reduce((l, r) => [...l, ...r]);
-                if (content.length > 0) {
-                    return content[0].replace("```cpp\n", "").replace("\n```", "").replace(this.classScope, "");
+                if (content.length > 0 && !content[0].includes("<error-type>")) {
+
+                    return content[0].replace("```cpp\n", "").replace("\n```", "").replace(new RegExp(this.classScope, 'g'), "");
                 }
             } catch (e) {}
                 const text = this.source.getText(symbol.range);

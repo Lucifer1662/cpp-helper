@@ -110,7 +110,8 @@ class MoveImpl {
             full = full.replace(matchedScope, "");
 
             scopeUnFinished.forEach((s) => {
-                content += s + "::";
+                if(s !== "")
+                    content += s + "::";
             });
 
             let mid = full.indexOf(this.source.getText(symbol.symbol.selectionRange));
@@ -164,7 +165,6 @@ export async function CreateMoveImpl(onlySelection: boolean): Promise<MoveImpl> 
 
     if (source) {
         let selection: vscode.Position | undefined = undefined;
-
         if (onlySelection) {
             selection = cursor;
         }
@@ -236,7 +236,14 @@ function findDeepestNamespace(
                     scopeUnFinished: nextScopes,
                 } as DeepReturn;
             } else {
-                return findDeepestNamespace(symbol.children, nextScopes);
+                let deepest =  findDeepestNamespace(symbol.children, nextScopes);
+                if(deepest === undefined){
+                    deepest = {
+                        insertAt: symbol.range.end,
+                        scopeUnFinished: nextScopes,
+                    } as DeepReturn;
+                }
+                return deepest;
             }
         })
         .filter((s) => s !== undefined)[0];

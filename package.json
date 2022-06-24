@@ -2,7 +2,7 @@
   "name": "lukes-cpp-helper",
   "displayName": "C++ helper",
   "description": "helps write cpp code",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
   "publisher": "personal-luke",
   "engines": {
