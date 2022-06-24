@@ -1,9 +1,14 @@
 #pragma once
-#include <vector>
 #include <string>
-#include "dog.h"
+#include <vector>
 
-namespace Anatomy{
+
+namespace Anatomy {
+
+
+struct Dog{
+    void bark(){}
+};
 
 class Person {
     std::string name, george;
@@ -11,32 +16,21 @@ class Person {
     std::vector<int> f;
     Dog dog;
 
-    struct Identity{
+    struct Identity {
         int id;
     } identity;
 
-
-    
-
     int getAge();
 
-    void setAge(int age); 
+    void setAge(int age);
 
-    Identity getIdentity(){
-        return identity;
-    }  
+    Identity getIdentity() { return identity; }
 
-    void getIdentity(Identity identity){
-        this->identity = identity;
-    }  
+    void getIdentity(Identity identity) { this->identity = identity; }
 
     std::string getName();
-    
 };
 
-}
+}  // namespace Anatomy
 
 void foo();
-
-
-

@@ -1,4 +1,4 @@
-# Lukes Cpp Helper
+# Luke's Cpp Helper
 
 Adds functionality to be help write c++ code. <br/>This extension was developed for personal use and does not fully work in some scenarios, it is still in development.<br/>
 Any feedback or suggestions is welcomed
@@ -10,8 +10,9 @@ Describe specific features of your extension including screenshots of your exten
 1. Moving specific functions from header files to cpp files
 2. Moving all function from header file to cpp file
 3. Moving functions, generates new header file if it does not exist
-4. Creates common default implemented constructors
-5. Generate constructor with all attributes as parameters
+4. Move content to a new header file
+5. Creates common default implemented constructors
+6. Generate constructor with all attributes as parameters
 
 ---
 
@@ -33,6 +34,16 @@ Creates a new file if it does not already exist
 
 ---
 
+### Move To Header File
+Moves selection to a new header file
+1. creates the file, adds #pragma once
+2. if selection is emedded in namespaces creates those as well
+3. adds include of new file to original 
+![](docs/imgs/Move%20to%20header.gif)
+
+
+---
+
 ### Create Basic Constructor
 Works best when all symbols can be found, else uses best guess when not, for example std::string is unknown in this example
 ![](docs/imgs/Create%20Constructor.gif)
@@ -47,6 +58,7 @@ Creates the basic default constructors and assignment operator
 
 
 
+
 ## Known Issues
 
 1. Moving constructors does not correctly remove initializer list
@@ -58,8 +70,10 @@ Creates the basic default constructors and assignment operator
 Initial release of cpp helper
 1. added basic functionality of moving functions
 
-### 1.1.1
+### 1.1.0
 Major bug fixes and additional documentation
 
+### 1.2.0
+Added move to header file command
+
 ## Upcoming Features
-1. Moving blocks of code to newly generated header file

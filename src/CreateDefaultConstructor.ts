@@ -28,7 +28,7 @@ class CreateDefaultConstructor {
     }
 
 
-    private CreateDeafaultConstructor() {
+    private CreateDefaultConstructor() {
         if (this.classSymbol) {
             var content = "";
             const name = this.classSymbol.name;
@@ -48,7 +48,7 @@ class CreateDefaultConstructor {
         //create new work edits
         this.workEdits = new vscode.WorkspaceEdit();
 
-        this.CreateDeafaultConstructor();
+        this.CreateDefaultConstructor();
 
         //apply edits
         vscode.workspace.applyEdit(this.workEdits);
@@ -57,7 +57,7 @@ class CreateDefaultConstructor {
 }
 
 
-export async function createDeafultConstr() {
+export async function createDefaultConstr() {
     await (await CreateCreateDefaultConstructor()).Create();
 }
 

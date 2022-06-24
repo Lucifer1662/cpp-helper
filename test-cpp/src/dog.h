@@ -1,5 +1,2 @@
 #pragma once
 
-struct Dog{
-
-};

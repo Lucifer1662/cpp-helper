@@ -49,6 +49,15 @@ export function ActivePos() {
     return undefined;
 }
 
+export function ActiveSelection() {
+    const editor = vscode.window.activeTextEditor;
+    if (editor !== undefined) {
+        return editor.selection;
+    }
+
+    return undefined;
+}
+
 
 
 export function IsHeader(document: vscode.TextDocument): boolean {

@@ -1,8 +1,8 @@
 {
   "name": "lukes-cpp-helper",
-  "displayName": "C++ helper",
+  "displayName": "Luke's C++ helper",
   "description": "helps write cpp code",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
   "publisher": "personal-luke",
   "engines": {
@@ -15,7 +15,8 @@
     "onCommand:cpp-helper.moveImplementation",
     "onCommand:cpp-helper.moveAllImplementation",
     "onCommand:cpp-helper.createConstructor",
-    "onCommand:cpp-helper.createDeafultConstructors"
+    "onCommand:cpp-helper.createDefaultConstructors",
+    "onCommand:cpp-helper.moveToHeader"
   ],
   "main": "./out/extension.js",
   "contributes": { 
@@ -33,8 +34,12 @@
         "title": "Generate constructor"
       },
       {
-        "command": "cpp-helper.createDeafultConstructors",
+        "command": "cpp-helper.createDefaultConstructors",
         "title": "Generate Default Constructors"
+      },
+      {
+        "command": "cpp-helper.moveToHeader",
+        "title": "Move To Header"
       }
     ],
     "menus": {
@@ -56,7 +61,12 @@
         },
         {
           "when": "resourceLangId == cpp",
-          "command": "cpp-helper.createDeafultConstructors",
+          "command": "cpp-helper.createDefaultConstructors",
+          "group": "YourGroup@1"
+        },
+        {
+          "when": "resourceLangId == cpp",
+          "command": "cpp-helper.moveToHeader",
           "group": "YourGroup@1"
         }
       ]

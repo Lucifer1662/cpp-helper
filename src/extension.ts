@@ -2,8 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { createConstr } from "./CreateConstructor";
-import { createDeafultConstr } from "./CreateDeafultConstructor";
+import { createDefaultConstr } from "./createDefaultConstructor";
 import { MoveImpAll, MoveImpSelection } from "./MoveImpl";
+import { moveToHeader } from "./MoveToHeader";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -37,9 +38,18 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "cpp-helper.createDeafultConstructors",
+      "cpp-helper.createDefaultConstructors",
       (args) => {
-        createDeafultConstr();
+        createDefaultConstr();
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "cpp-helper.moveToHeader",
+      (args) => {
+        moveToHeader();
       }
     )
   );

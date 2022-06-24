@@ -61,7 +61,6 @@ class MoveImpl {
 
 
             var enc = new TextEncoder();
-            console.log("writing file!");
             await vscode.workspace.fs.writeFile(
                 vscode.Uri.file(this.destinationUri),
                 enc.encode(fileContent)
@@ -187,7 +186,7 @@ export async function CreateMoveImpl(onlySelection: boolean): Promise<MoveImpl> 
         const uri = source.uri.path.substring(0, source.uri.path.lastIndexOf(".")) + ".cpp";
         return new MoveImpl(source, uri, symbols);
     } else
-        throw "no active text exitor window";
+        throw "no active text editor window";
 
 
 
