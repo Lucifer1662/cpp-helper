@@ -111,7 +111,7 @@ export function findDeepestClassToken(
             const deeperClass = findDeepestClassToken(symbol.children, pos);
             if (deeperClass)
                 return deeperClass;
-            else if (symbol.kind === 4) {
+            else if (symbol.kind === 4 || symbol.kind === 22) {
                 console.log({ found: symbol })
                 return symbol
             }
@@ -133,7 +133,7 @@ export function findDeepestClassTokenWithScope(
             const deeperClass = findDeepestClassTokenWithScope(symbol.children, pos, [...scope, symbol.name]);
             if (deeperClass)
                 return deeperClass;
-            else if (symbol.kind === 4) {
+            else if (symbol.kind === 4 || symbol.kind == 22) {
                 console.log({ found: symbol })
                 return [symbol, scope] as [vscode.DocumentSymbol, string[]];
             }
