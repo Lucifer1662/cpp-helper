@@ -13,6 +13,7 @@ Describe specific features of your extension including screenshots of your exten
 4. Move content to a new header file
 5. Creates common default implemented constructors
 6. Generate constructor with all attributes as parameters
+7. Add all includes
 
 ---
 
@@ -37,7 +38,7 @@ Creates a new file if it does not already exist
 ### Move To Header File
 Moves selection to a new header file
 1. creates the file, adds #pragma once
-2. if selection is emedded in namespaces creates those as well
+2. if selection is embedded in namespaces creates those as well
 3. adds include of new file to original 
 ![](docs/imgs/Move%20to%20header.gif)
 
@@ -57,12 +58,18 @@ Creates the basic default constructors and assignment operator
 ![](docs/imgs/Create%20Default%20Constructors.gif)
 
 
+---
+
+### Add all missing includes
+Adds all the missing includes. Works by looking at every word and seeing if its declaration is missing from the includes.
+It contains hardcoded mappings of the standard library so similar named symbols might get resolve the std lib instead of user defined.
+![](docs/imgs/Add%20All%20Includes.gif)
 
 
 ## Known Issues
 
 1. Moving constructors does not correctly remove initializer list
-2. Creating constructor of unknown types that are comma seperate, for example std::string me, you; if std::string is not resolved.
+2. Creating constructor of unknown types that are comma separate, for example std::string me, you; if std::string is not resolved.
 
 ## Release Notes
 ### 1.1.0
@@ -79,4 +86,9 @@ Added move to header file command
 ### 1.2.1
 Fixed create constructor command not working with structs
 
+### 1.3.0
+Fixed create constructor command not working with comments
+Added add includes automatically
+
 ## Upcoming Features
+Adding specific symbols include 

@@ -48,32 +48,50 @@ class AddIncludes {
 
     private async AddIncludes() {
 
-        let insertionPos = FindIncludeLocation(this.source);
+        let text = this.source.getText();
 
-        const text = this.source.getText();
-
-
+        const invalids = [...text.matchAll(new RegExp(`(?:\\/\\/(?:\\\\\\n|[^\\n])*\\n)|(?:\\/\\*[\\s\\S]*?\\*\\/)|((?:R"([^(\\\\\\s]{0,16})\\([^)]*\\)\\2")|(?:@"[^"]*?")|(?:"(?:\\?\\?'|\\\\\\\\|\\\\"|\\\\\\n|[^"])*?")|(?:'(?:\\\\\\\\|\\\\'|\\\\\\n|[^'])*?'))`, 'g'))]
+        console.log(invalids);
         console.log(text);
-        let matches = text.match(new RegExp("[_|A-Z|a-z]+[:|_|A-Z|a-z|0-9]+", 'g'));
+        let matches = [...text.matchAll(new RegExp("[_|A-Z|a-z]+[:|_|A-Z|a-z|0-9]+", 'g'))];
+
+        matches = matches.filter(match =>
+            invalids.every(invalid => {
+                if (!match.index)
+                    return false;
+                if (invalid.index) {
+                    const len = Math.max(...invalid.filter(s => s !== undefined).map(s => s.length))
+                    //check that the match is outside the invalids range
+                    const outside = invalid.index > match.index || match.index >= invalid.index + len;
+                    return outside;
+                } else {
+                    return true;
+                }
+            })
+        );
+
         if (matches) {
             try {
-                matches = matches.filter((s) => !reservedWords.includes(s));
+                matches = matches.filter((s) => !reservedWords.includes(s.toString()));
 
                 //remove include matches
                 const includePositions = GetIncludes(this.source.getText());
-                matches = matches.filter((s) => !includePositions.includes(s));
+                matches = matches.filter((s) => !includePositions.includes(s.toString()));
 
 
                 const identifiers = [... new Set(matches)];
 
-                const idPositions = identifiers.map((i) => text.indexOf(i) + i.length - 1).map((i) => this.source.positionAt(i));
+                const idPositions = identifiers.filter(i => i.index !== undefined)
+                    //@ts-ignore
+                    .map((i) => i.index + i.length - 1)
+                    .map((i) => this.source.positionAt(i));
 
                 let uris: vscode.Uri[] = [];
                 let stds: string[] = []
 
                 for (let index = 0; index < identifiers.length; index++) {
 
-                    const stdidentifier = identifiers[index].replace("std::", "");
+                    const stdidentifier = identifiers[index].toString().replace("std::", "");
                     if (cppStdsIds.includes(stdidentifier)) {
                         stds.push(cppStdMap[stdidentifier]);
                     } else {
