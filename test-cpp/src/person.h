@@ -1,20 +1,20 @@
 #pragma once
+#include <socket.h>
 #include <string>
 #include <vector>
+#include "dog.h"
+
 
 
 namespace Anatomy {
 
-
-struct Dog{
-    void bark(){}
-};
 
 class Person {
     std::string name, george;
     int age, height, *numberOfSiblings;
     std::vector<int> f;
     Dog dog;
+    Socket socket;
 
     struct Identity {
         int id;

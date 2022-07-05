@@ -2,7 +2,7 @@
   "name": "lukes-cpp-helper",
   "displayName": "Luke's C++ helper",
   "description": "helps write cpp code",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
   "publisher": "personal-luke",
   "engines": {
@@ -16,10 +16,11 @@
     "onCommand:cpp-helper.moveAllImplementation",
     "onCommand:cpp-helper.createConstructor",
     "onCommand:cpp-helper.createDefaultConstructors",
-    "onCommand:cpp-helper.moveToHeader"
+    "onCommand:cpp-helper.moveToHeader",
+    "onCommand:cpp-helper.addIncludes"
   ],
   "main": "./out/extension.js",
-  "contributes": { 
+  "contributes": {
     "commands": [
       {
         "command": "cpp-helper.moveImplementation",
@@ -40,6 +41,10 @@
       {
         "command": "cpp-helper.moveToHeader",
         "title": "Move To Header"
+      },
+      {
+        "command": "cpp-helper.addIncludes",
+        "title": "Add Includes"
       }
     ],
     "menus": {
@@ -68,8 +73,26 @@
           "when": "resourceLangId == cpp",
           "command": "cpp-helper.moveToHeader",
           "group": "YourGroup@1"
+        },
+        {
+          "when": "resourceLangId == cpp",
+          "command": "cpp-helper.addIncludes",
+          "group": "YourGroup@1"
         }
       ]
+    },
+    "configuration": {
+      "title": "Luke's C++ Helper",
+      "properties": {
+        "lukes-cpp-helper.externalIncludeFolders": {
+          "type": "array",
+          "default": ["include"],
+          "items": {
+            "type": "string"
+          },
+          "description": "Folders that are external, their content will be include using <> notation, eg #include <boost/asio>"
+        }
+      }
     }
   },
   "scripts": {
@@ -84,6 +107,7 @@
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
+    "@types/node-fetch": "^2.6.2",
     "@types/vscode": "^1.67.0",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
@@ -94,5 +118,7 @@
     "typescript": "^4.7.2"
   },
   "dependencies": {
-    "vscode-languageclient": "^7.0.0"  }
+    "node-fetch": "^2.6.1",
+    "vscode-languageclient": "^7.0.0"
+  }
 }

@@ -76,4 +76,7 @@ Major bug fixes and additional documentation
 ### 1.2.0
 Added move to header file command
 
+### 1.2.1
+Fixed create constructor command not working with structs
+
 ## Upcoming Features

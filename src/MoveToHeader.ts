@@ -1,6 +1,6 @@
 import { TextEncoder } from "util";
 import * as vscode from "vscode";
-import { GetDocument, ActiveDoc, ActiveSelection, GetSymbolsDoc } from './util';
+import { GetDocument, ActiveDoc, ActiveSelection, GetSymbolsDoc, FindIncludeLocation } from './util';
 
 
 
@@ -78,20 +78,7 @@ class MoveToHeader {
     }
 
     private AddHeadersToSource(){
-        const text = this.source.getText();
-        const includeIndex = text.lastIndexOf("#include");
-        const pragmaIndex = text.lastIndexOf("#pragma once");
-        
-        let index = 0;
-
-        if(includeIndex !== -1){
-            index = includeIndex;
-        }else if(pragmaIndex !== -1){
-            index = pragmaIndex;
-        }
-
-        let insertionPos = this.source.positionAt(index);
-        insertionPos = new vscode.Position(insertionPos.line+1, 0);
+        let insertionPos = FindIncludeLocation(this.source);
 
         let content = `#include "${this.destinationName}"\n`;
 

@@ -1,0 +1,1 @@
+npx ts-node get_std_include/get_std_include -T && npx ts-node get_std_include/convert -T

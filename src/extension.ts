@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import { addIncludes } from "./AddIncludes";
 import { createConstr } from "./CreateConstructor";
 import { createDefaultConstr } from "./createDefaultConstructor";
 import { MoveImpAll, MoveImpSelection } from "./MoveImpl";
@@ -50,6 +51,15 @@ export function activate(context: vscode.ExtensionContext) {
       "cpp-helper.moveToHeader",
       (args) => {
         moveToHeader();
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "cpp-helper.addIncludes",
+      (args) => {
+        addIncludes();
       }
     )
   );
