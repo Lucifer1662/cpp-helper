@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { findDeepestClassTokenWithScope, GetAttributes } from "./Symbol";
-import { ActiveDoc, GetSymbolsDoc, ActivePos, RemoveSemi } from './util';
+import { ActiveDoc, GetSymbolsDoc, ActivePos, RemoveSemi, extractAround } from './util';
 
 
 
@@ -47,8 +47,8 @@ class CreateConstructor {
                 //@ts-ignore
                 let content: string[] = hints.map(h => h.contents.map(w => w.value).filter(w => w.startsWith("```cpp"))).reduce((l, r) => [...l, ...r]);
                 if (content.length > 0 && !content[0].includes("<error-type>")) {
-
-                    return content[0].replace("```cpp\n", "").replace("\n```", "").replace(new RegExp(this.classScope, 'g'), "");
+                    const res = extractAround(content[0], "```cpp\n", "\n```").replace(new RegExp(this.classScope, 'g'), "");
+                    return res;
                 }
             } catch (e) {}
                 const text = this.source.getText(symbol.range);

@@ -88,8 +88,8 @@ export function FindIncludeLocation(source: vscode.TextDocument){
     return insertionPos;
 }
 
-function extractAround(s:string, lhs: string, rhs:string){
-    const start = s.indexOf(lhs)+1;
+export function extractAround(s:string, lhs: string, rhs:string){
+    const start = s.indexOf(lhs)+lhs.length;
     const end = s.lastIndexOf(rhs);
     return s.substring(start, end)
 }
