@@ -111,10 +111,11 @@ export async function GetIncludesFor(idPositions: vscode.Position[], identifiers
 
     const local = GetTail(source.uri.toString(), workspaceFolders[0].toString() + "/")
 
+    const longestMatches = localPaths.map(p => longestMatch(p, local));
+    const backslashes = longestMatches.map(s => backslashesNeeded(s, local));
 
-    const backslashes = localPaths.map(p => longestMatch(p, local)).map(s => backslashesNeeded(s, local))
-
-    const newLocalPaths = localPaths.map((p, i) => backslashes[i] + p);
+    const trimmedLocalPaths = localPaths.map((p,i)=>p.substring(longestMatches[i].length));
+    const newLocalPaths = trimmedLocalPaths.map((p, i) => backslashes[i] + p);
 
     return { localPaths: newLocalPaths, externalPaths };
 
