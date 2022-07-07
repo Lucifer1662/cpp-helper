@@ -2,7 +2,7 @@
   "name": "lukes-cpp-helper",
   "displayName": "Luke's C++ helper",
   "description": "helps write cpp code",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
   "publisher": "personal-luke",
   "engines": {
@@ -17,7 +17,10 @@
     "onCommand:cpp-helper.createConstructor",
     "onCommand:cpp-helper.createDefaultConstructors",
     "onCommand:cpp-helper.moveToHeader",
-    "onCommand:cpp-helper.addIncludes"
+    "onCommand:cpp-helper.addIncludes",
+    "onCommand:cpp-helper.addIncludeFor",
+    "onLanguage:markdown",
+    "onLanguage:cpp"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -45,39 +48,48 @@
       {
         "command": "cpp-helper.addIncludes",
         "title": "Add Includes"
+      },
+      {
+        "command": "cpp-helper.addIncludeFor",
+        "title": "Add Includes For"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "when": "resourceLangId == cpp",
+          "when": "resourceLangId == cpp && cpp-helper-moveImplementation-cm",
           "command": "cpp-helper.moveImplementation",
-          "group": "YourGroup@1"
+          "group": "CppHelper@1"
         },
         {
-          "when": "resourceLangId == cpp",
+          "when": "resourceLangId == cpp && cpp-helper.moveAllImplementation.cm",
           "command": "cpp-helper.moveAllImplementation",
-          "group": "YourGroup@1"
+          "group": "CppHelper@1"
         },
         {
-          "when": "resourceLangId == cpp",
+          "when": "resourceLangId == cpp && cpp-helper.createConstructor.cm",
           "command": "cpp-helper.createConstructor",
-          "group": "YourGroup@1"
+          "group": "CppHelper@1"
         },
         {
-          "when": "resourceLangId == cpp",
+          "when": "resourceLangId == cpp && cpp-helper.createDefaultConstructors.cm",
           "command": "cpp-helper.createDefaultConstructors",
-          "group": "YourGroup@1"
+          "group": "CppHelper@1"
         },
         {
-          "when": "resourceLangId == cpp",
+          "when": "resourceLangId == cpp && cpp-helper.moveToHeader.cm",
           "command": "cpp-helper.moveToHeader",
-          "group": "YourGroup@1"
+          "group": "CppHelper@1"
         },
         {
-          "when": "resourceLangId == cpp",
+          "when": "resourceLangId == cpp && cpp-helper.addIncludes.cm",
           "command": "cpp-helper.addIncludes",
-          "group": "YourGroup@1"
+          "group": "CppHelper@1"
+        },
+        {
+          "when": "resourceLangId == cpp && cpp-helper.addIncludeFor.cm",
+          "command": "cpp-helper.addIncludeFor",
+          "group": "CppHelper@1"
         }
       ]
     },
@@ -91,6 +103,14 @@
             "type": "string"
           },
           "description": "Folders that are external, their content will be include using <> notation, eg #include <boost/asio>"
+        },
+        "lukes-cpp-helper.haveInContextMenu": {
+          "type": "array",
+          "default": ["moveImplementation", "moveAllImplementation", "createConstructor", "createDefaultConstructors", "moveToHeader", "addIncludes", "addIncludeFor"],
+          "items": {
+            "type": "string"
+          },
+          "description": "What commands should be available in the context menu, by default they are all present. Reload to vscode for effects to take place. \n Valid items: moveImplementation, moveAllImplementation, createConstructor, createDefaultConstructors, moveToHeader, addIncludes, addIncludeFor "
         }
       }
     }

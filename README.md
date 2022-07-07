@@ -14,6 +14,10 @@ Describe specific features of your extension including screenshots of your exten
 5. Creates common default implemented constructors
 6. Generate constructor with all attributes as parameters
 7. Add all includes
+8. Add specific includes via context menu, or quick fix
+
+
+All context menu items can be removed in the settings, by default they are all present.
 
 ---
 
@@ -60,10 +64,21 @@ Creates the basic default constructors and assignment operator
 
 ---
 
-### Add all missing includes
+### Add All missing Icludes
 Adds all the missing includes. Works by looking at every word and seeing if its declaration is missing from the includes.
-It contains hardcoded mappings of the standard library so similar named symbols might get resolve the std lib instead of user defined.
+It contains hardcoded mappings of the standard library so similar named symbols might get resolve to the std lib instead of user defined.
 ![](docs/imgs/Add%20All%20Includes.gif)
+
+
+### Add Include for Specific Symbol
+Adds specific include that is currently selected.
+It contains hardcoded mappings of the standard library so similar named symbols might get resolve to the std lib instead of user defined.
+Available as command or in context menu or as a quick fix.
+![](docs/imgs/Quick%20Fix%20Include.gif)
+
+![](docs/imgs/Add%20Include%20For.gif)
+
+
 
 
 ## Known Issues
@@ -90,5 +105,6 @@ Fixed create constructor command not working with structs
 Fixed create constructor command not working with comments
 Added add includes automatically
 
-## Upcoming Features
-Adding specific symbols include 
+### 1.4.0
+Add specific include for clicked on symbol
+Add quick fix suggestion to include symbol

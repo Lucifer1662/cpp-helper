@@ -122,12 +122,14 @@ export const configName = 'lukes-cpp-helper';
 
 
 export interface Configuration{
-    externalIncludeFolders: string[]
+    externalIncludeFolders: string[],
+    haveInContextMenu: string[]
 }
 
 export function getConfiguration(){
     const config = vscode.workspace.getConfiguration(configName);
     return {
         externalIncludeFolders: config.get<string[]>('externalIncludeFolders'),
+        haveInContextMenu: config.get<string[]>('haveInContextMenu'),
     } as Configuration
 }
