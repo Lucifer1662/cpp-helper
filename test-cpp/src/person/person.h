@@ -10,6 +10,7 @@ class Person {
     std::vector<int> f;  // external from workspace
     Dog dog;             // local
     Socket socket;       // external but in local include folder
+    Bert bert;
 
     struct Identity {
         int id;

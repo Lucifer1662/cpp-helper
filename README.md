@@ -132,5 +132,8 @@ Add include quick fix to show multiple options for include
 
 
 ### 1.5.0
-Added forward declare, does not handle name spacing
+Added forward declare, does not handle name spacing</br>
 Fixed relative includes using ../ notation
+
+### 1.5.1
+Fixed relative includes not removing same root paths
