@@ -3,15 +3,16 @@
 import * as vscode from "vscode";
 import { AddIncludeCodeAction, addIncludeFor, addIncludes } from "./AddIncludes";
 import { createConstr } from "./CreateConstructor";
-import { createDefaultConstr } from "./createDefaultConstructor";
+import { createDefaultConstr } from "./CreateDefaultConstructor";
 import { ForwardDeclarationCodeAction } from "./ForwardDeclaration";
-import { MoveImpAll, MoveImpSelection } from "./MoveImpl";
+import { MoveImpAll, MoveImplCodeAction, MoveImpSelection } from "./MoveImpl";
 import { moveToHeader } from "./MoveToHeader";
 import { getConfiguration } from "./util";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+
   const config = getConfiguration();
 
   config.haveInContextMenu.forEach(cm => {
@@ -89,6 +90,11 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider('cpp', new ForwardDeclarationCodeAction(), {
       providedCodeActionKinds: ForwardDeclarationCodeAction.providedCodeActionKinds
+    }));
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider('cpp', new MoveImplCodeAction(), {
+      providedCodeActionKinds: MoveImplCodeAction.providedCodeActionKinds
     }));
 }
 

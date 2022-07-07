@@ -137,3 +137,10 @@ Fixed relative includes using ../ notation
 
 ### 1.5.1
 Fixed relative includes not removing same root paths
+
+### 1.5.2
+Fixed bad import
+
+### 1.5.3
+Added move to cpp to quick fix </br>
+Fixed a back slash forward slash problem when generating include

@@ -2,7 +2,7 @@
   "name": "lukes-cpp-helper",
   "displayName": "Luke's C++ helper",
   "description": "helps write cpp code",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
   "publisher": "personal-luke",
   "engines": {
@@ -57,7 +57,7 @@
     "menus": {
       "editor/context": [
         {
-          "when": "resourceLangId == cpp && cpp-helper-moveImplementation-cm",
+          "when": "resourceLangId == cpp && cpp-helper.moveImplementation.cm",
           "command": "cpp-helper.moveImplementation",
           "group": "CppHelper@1"
         },
