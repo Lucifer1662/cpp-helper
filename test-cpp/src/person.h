@@ -1,20 +1,13 @@
 #pragma once
-#include <socket.h>
-#include <string>
-#include <vector>
-#include "dog.h"
-
-
 
 namespace Anatomy {
 
-
 class Person {
-    std::string name, george;
+    std::string name, george;  // external from workspace
     int age, height, *numberOfSiblings;
-    std::vector<int> f;
-    Dog dog;
-    Socket socket;
+    std::vector<int> f;  // external from workspace
+    Dog dog;             // local
+    Socket socket;       // external but in local include folder
 
     struct Identity {
         int id;

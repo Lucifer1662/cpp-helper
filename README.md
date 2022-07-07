@@ -103,11 +103,11 @@ Added move to header file command
 Fixed create constructor command not working with structs
 
 ### 1.3.0
-Fixed create constructor command not working with comments
+Fixed create constructor command not working with comments </br>
 Added add includes automatically
 
 ### 1.4.0
-Add specific include for clicked on symbol
+Add specific include for clicked on symbol</br>
 Add quick fix suggestion to include symbol
 
 ### 1.4.1
