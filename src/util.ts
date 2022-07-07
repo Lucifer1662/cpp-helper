@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { reservedWords } from "./reservedWords";
 
 
 export async function GetDocument(uri: string) {
@@ -115,7 +116,7 @@ export function GetIncludePositions(doc: vscode.TextDocument){
 }
 
 export function GetTail(s:string, del:string){
-    return s.substring(s.lastIndexOf(del)+1);
+    return s.substring(s.lastIndexOf(del)+del.length);
 }
 
 export const configName = 'lukes-cpp-helper';
@@ -132,4 +133,71 @@ export function getConfiguration(){
         externalIncludeFolders: config.get<string[]>('externalIncludeFolders'),
         haveInContextMenu: config.get<string[]>('haveInContextMenu'),
     } as Configuration
+}
+
+export function GetElligibleMatches(text: string, allText: string) {
+
+    const invalids = [...text.matchAll(new RegExp(`(?:\\/\\/(?:\\\\\\n|[^\\n])*\\n)|(?:\\/\\*[\\s\\S]*?\\*\\/)|((?:R"([^(\\\\\\s]{0,16})\\([^)]*\\)\\2")|(?:@"[^"]*?")|(?:"(?:\\?\\?'|\\\\\\\\|\\\\"|\\\\\\n|[^"])*?")|(?:'(?:\\\\\\\\|\\\\'|\\\\\\n|[^'])*?'))`, 'g'))]
+    let matches = [...text.matchAll(new RegExp("[_|A-Z|a-z]+[:|_|A-Z|a-z|0-9]+", 'g'))];
+
+    matches = matches.filter(match =>
+        invalids.every(invalid => {
+            if (!match.index)
+                return false;
+            if (invalid.index) {
+                const len = Math.max(...invalid.filter(s => s !== undefined).map(s => s.length))
+                //check that the match is outside the invalids range
+                const outside = invalid.index > match.index || match.index >= invalid.index + len;
+                return outside;
+            } else {
+                return true;
+            }
+        })
+    );
+
+    if (matches) {
+        try {
+            matches = matches.filter((s) => !reservedWords.includes(s.toString()));
+
+            //remove include matches
+            const includePositions = GetIncludes(allText);
+            matches = matches.filter((s) => !includePositions.includes(s.toString()));
+
+            const identifiers = [... new Set(matches)];
+            return identifiers;
+
+        } catch (e) { }
+    }
+
+    return []
+}
+
+export function lenMatch(match: RegExpMatchArray){
+   return Math.max(...match.filter(s => s !== undefined).map(s => s.length));
+}
+
+
+export function MatchesAtCursor(source: vscode.TextDocument) {
+    const pos = ActivePos()
+    if (pos) {
+        let line = source.lineAt(pos.line);
+
+        const index = source.offsetAt(pos) - source.offsetAt(new vscode.Position(pos.line, 0));
+
+        let identifiers = GetElligibleMatches(line.text, source.getText());
+        identifiers = identifiers.filter(id => {
+            if (id.index !== undefined) {
+                const len = lenMatch(id);
+                return id.index <= index && index < id.index + len;
+            }
+            return false;
+        });
+
+        return identifiers;
+    }
+    return [];
+}
+
+export function plainTextInRegex(s:string){
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

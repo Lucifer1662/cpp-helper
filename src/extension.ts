@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { AddIncludeCodeAction, addIncludeFor, addIncludes } from "./AddIncludes";
 import { createConstr } from "./CreateConstructor";
 import { createDefaultConstr } from "./createDefaultConstructor";
+import { ForwardDeclarationCodeAction } from "./ForwardDeclaration";
 import { MoveImpAll, MoveImpSelection } from "./MoveImpl";
 import { moveToHeader } from "./MoveToHeader";
 import { getConfiguration } from "./util";
@@ -13,8 +14,8 @@ import { getConfiguration } from "./util";
 export function activate(context: vscode.ExtensionContext) {
   const config = getConfiguration();
 
-  config.haveInContextMenu.forEach(cm=>{
-    vscode.commands.executeCommand('setContext', 'cpp-helper.'+cm+".cm", true)
+  config.haveInContextMenu.forEach(cm => {
+    vscode.commands.executeCommand('setContext', 'cpp-helper.' + cm + ".cm", true)
   })
 
   context.subscriptions.push(
@@ -83,6 +84,11 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider('cpp', new AddIncludeCodeAction(), {
       providedCodeActionKinds: AddIncludeCodeAction.providedCodeActionKinds
+    }));
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider('cpp', new ForwardDeclarationCodeAction(), {
+      providedCodeActionKinds: ForwardDeclarationCodeAction.providedCodeActionKinds
     }));
 }
 

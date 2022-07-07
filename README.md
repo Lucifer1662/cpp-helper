@@ -1,6 +1,7 @@
 # Luke's Cpp Helper
 
-Adds functionality to be help write c++ code. <br/>This extension was developed for personal use and does not fully work in some scenarios, it is still in development.<br/>
+Adds functionality to be help write c++ code. <br/>
+This extension was developed for personal use and does not fully work in some scenarios, it is still in development. <br/>
 Any feedback or suggestions is welcomed
 
 ## Features
@@ -17,7 +18,7 @@ Describe specific features of your extension including screenshots of your exten
 8. Add specific includes via context menu, or quick fix
 
 
-All context menu items can be removed in the settings, by default they are all present.
+All context menu items can be removed in the settings, by default they are all present. </br>
 Include/external folders can added in the config settings, to make includes correct.
 
 ---
@@ -45,6 +46,7 @@ Moves selection to a new header file
 1. creates the file, adds #pragma once
 2. if selection is embedded in namespaces creates those as well
 3. adds include of new file to original 
+
 ![](docs/imgs/Move%20to%20header.gif)
 
 
@@ -52,6 +54,7 @@ Moves selection to a new header file
 
 ### Create Basic Constructor
 Works best when all symbols can be found, else uses best guess when not, for example std::string is unknown in this example
+
 ![](docs/imgs/Create%20Constructor.gif)
 
 
@@ -60,25 +63,39 @@ Works best when all symbols can be found, else uses best guess when not, for exa
 
 ### Create Default Constructors
 Creates the basic default constructors and assignment operator
+
 ![](docs/imgs/Create%20Default%20Constructors.gif)
 
 
 ---
 
 ### Add All missing Icludes
-Adds all the missing includes. Works by looking at every word and seeing if its declaration is missing from the includes.
+Adds all the missing includes. Works by looking at every word and seeing if its declaration is missing from the includes.</br>
 It contains hardcoded mappings of the standard library so similar named symbols might get resolve to the std lib instead of user defined.
+
 ![](docs/imgs/Add%20All%20Includes.gif)
 
 
 ### Add Include for Specific Symbol
-Adds specific include that is currently selected.
-It contains hardcoded mappings of the standard library so similar named symbols might get resolve to the std lib instead of user defined.
+Adds specific include that is currently selected.</br>
+It contains hardcoded mappings of the standard library so similar named symbols might get resolve to the std lib instead of user defined.</br>
 Available as command or in context menu or as a quick fix.
+
 ![](docs/imgs/Quick%20Fix%20Include.gif)
 
 ![](docs/imgs/Add%20Include%20For.gif)
 
+
+### Forward Declare of struct/class
+Forward declaring is useful on large projects as it can reduce build time significantly. </br>
+As if person.h includes dog.h, we can image lots of other files like world.h including person.h implicitly including dog.h even if it does not use dog. </br>
+Thus if any change is made to dog.h a lot of build system will then rebuild person.h and world.h, but by forward declaring we can remove these dependencies. </br>
+When a type is only mention as a pointer/reference and without any dereferencing, it can be forward declared.</br>
+The steps are:
+1. Move/delete existing include for type to cpp file if cpp exists.
+2. Add in forward declaration. Does not handle spacing currently
+   
+![](docs/imgs/Forward%20Declare.gif)
 
 
 
@@ -112,3 +129,8 @@ Add quick fix suggestion to include symbol
 
 ### 1.4.1
 Add include quick fix to show multiple options for include
+
+
+### 1.5.0
+Added forward declare, does not handle name spacing
+Fixed relative includes using ../ notation

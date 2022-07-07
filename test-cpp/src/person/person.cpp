@@ -1,5 +1,5 @@
 #include "person.h"
-#include "dog/dog.h"//include moved here
+
 
 int Anatomy::Person::getAge(){
     return age;

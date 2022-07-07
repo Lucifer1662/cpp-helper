@@ -58,7 +58,6 @@ export function findElligbleTokens(
     parentChain: vscode.DocumentSymbol[] = [],
 ): Symbol[] {
     return symbols.map((symbol) => {
-        console.log(symbol);
         if (symbol.children.length == 0) {
             if (symbol.kind === 5) {
                 return [createSymbol(document, scope, symbol, parentChain)];
@@ -112,7 +111,6 @@ export function findDeepestClassToken(
             if (deeperClass)
                 return deeperClass;
             else if (symbol.kind === 4 || symbol.kind === 22) {
-                console.log({ found: symbol })
                 return symbol
             }
         }
@@ -134,7 +132,6 @@ export function findDeepestClassTokenWithScope(
             if (deeperClass)
                 return deeperClass;
             else if (symbol.kind === 4 || symbol.kind == 22) {
-                console.log({ found: symbol })
                 return [symbol, scope] as [vscode.DocumentSymbol, string[]];
             }
         }

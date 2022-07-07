@@ -1,8 +1,147 @@
 import * as vscode from "vscode";
-import { reservedWords } from "./reservedWords";
-import { ActiveDoc, ActivePos, configName, FindIncludeLocation, getConfiguration, GetIncludePositions, GetIncludes, GetTail, InternalIncludes } from './util';
+import { ActiveDoc, ActivePos, FindIncludeLocation, getConfiguration, GetElligibleMatches, GetIncludes, GetTail, MatchesAtCursor, plainTextInRegex } from './util';
 import { cppStdMap } from './cppStdMap'
 const cppStdsIds = Object.keys(cppStdMap);
+
+
+function longestMatch(l: string, r: string) {
+    let index = 0;
+    for (; index < l.length || index < r.length; index++) {
+        if (l[index] !== r[index]) {
+            break;
+        }
+    }
+
+    const end = index;
+    let res = l.substring(0, end);
+
+    res = res.substring(0, res.lastIndexOf("/") + 1);
+
+    return res;
+}
+
+function backslashesNeeded(s: string, local: string) {
+
+    const numBackslashes = (local.substring(s.length).match(new RegExp("/", 'g')) || []).length;
+
+    let slashes = ""
+    for (let index = 0; index < numBackslashes; index++) {
+        slashes += "../";
+    }
+    return slashes;
+}
+
+
+export async function GetIncludesFor(idPositions: vscode.Position[], identifiers: string[], giveAll: boolean, source: vscode.TextDocument) {
+
+    let uris: vscode.Uri[] = [];
+    let stds: string[] = []
+
+    for (let index = 0; index < identifiers.length; index++) {
+
+        const stdidentifier = identifiers[index].replace("std::", "");
+        const isStd = cppStdsIds.includes(stdidentifier)
+        if (isStd) {
+            stds.push(cppStdMap[stdidentifier]);
+        }
+
+
+        if (!isStd || giveAll) {
+            const location: vscode.Location[] = await vscode.commands.executeCommand(
+                "vscode.executeDeclarationProvider",
+                source.uri,
+                idPositions[index]
+            );
+
+            if (giveAll) {
+                uris.push(...location.map(l => l.uri));
+            } else if (location.length > 0) {
+                uris.push(location[0].uri);
+            }
+        }
+
+    }
+
+    uris = uris.filter(uri => uri.toString() !== source.uri.toString())
+    uris = uris.filter(uri => !uri.path.endsWith(".c") && !uri.path.endsWith(".cpp"))
+
+    const paths = uris;
+
+    const workspaceFolders = vscode.workspace.workspaceFolders?.map(folder => folder.uri) || [];
+
+    let localPaths: string[] = []
+    let externalPaths: string[] = [];
+
+    const config = getConfiguration();
+
+    let ignoreFolderss = workspaceFolders.map(wf => config.externalIncludeFolders.map(ed => wf.toString() + "/" + ed));
+    let ignoreFolders: string[] = []
+    if (ignoreFolderss.length > 0) {
+        ignoreFolders = ignoreFolderss.reduce((l, r) => [...l, ...r]);
+    }
+
+
+
+    //have to use .toString instead .path as drive letters are inconsientally capitalized 
+    paths.forEach(path => {
+        const isOutsideWorkspace = workspaceFolders.every((wf => !path.toString().startsWith(wf.toString())));
+        if (isOutsideWorkspace) {
+            externalPaths.push(path.path);
+        } else {
+            const matchesExternalIncludeIgnore = ignoreFolders.some((ignore => path.toString().startsWith(ignore)));
+            if (matchesExternalIncludeIgnore) {
+                externalPaths.push(path.path);
+            } else {
+                localPaths.push(path.path);
+            }
+
+        }
+    })
+
+    externalPaths = externalPaths.map(include => GetTail(include, "include/"))
+
+    externalPaths = [...stds, ...externalPaths];
+    externalPaths = [... new Set(externalPaths)]
+    localPaths = [... new Set(localPaths)];
+
+    source.uri.toString();
+
+
+    localPaths = localPaths.map(s => vscode.Uri.parse(s, undefined)).map(uri => GetTail(uri.toString(), workspaceFolders[0].toString() + "/"))
+
+    const local = GetTail(source.uri.toString(), workspaceFolders[0].toString() + "/")
+
+
+    const backslashes = localPaths.map(p => longestMatch(p, local)).map(s => backslashesNeeded(s, local))
+
+    const newLocalPaths = localPaths.map((p, i) => backslashes[i] + p);
+
+    return { localPaths: newLocalPaths, externalPaths };
+
+}
+
+export function findExternalInclude(text: string, name: string) {
+    const plain = plainTextInRegex(name);
+    return text.match(`#include\\s*<${plain}>`) || [];
+}
+
+export function findInternalInclude(text: string, name: string) {
+    const plain = plainTextInRegex(name);
+    return text.match(`#include\\s*"${plain}"`) || [];
+}
+
+export function findExternalIncludeAll(text: string, name: string) {
+    const plain = plainTextInRegex(name);
+    return [...text.matchAll(new RegExp(`#include\\s*<${plain}>`, 'g'))];
+}
+
+export function findInternalIncludeAll(text: string, name: string) {
+    const plain = plainTextInRegex(name);
+    try {
+        return [...text.matchAll(new RegExp(`#include\\s*"${plain}"`, 'g'))];
+    } catch (e) {}
+    return [];
+}
 
 class AddIncludes {
     source: vscode.TextDocument;
@@ -17,53 +156,36 @@ class AddIncludes {
     ) {
         this.source = source;
         this.srcSymbols = srcSymbols;
-        const config = getConfiguration();
-        this.externalIncludeDirectories = config.externalIncludeFolders;
         this.giveAll = giveAll;
     }
 
     private AddInternalIncludes(includes: string[], insertAt: vscode.Position) {
         const text = this.source.getText();
-        includes.map(include => GetTail(include, "/")).forEach(name => {
-            const res = text.match(`#include\\s*"${name}"`);
-            if (res === null || res.length === 0)
-                this.workEdits.insert(this.source.uri, insertAt, `#include "${name}"\n`)
+        includes.forEach(name => {
+            try {
+                const res = findInternalInclude(text, name);
+                if (res.length === 0)
+                    this.workEdits.insert(this.source.uri, insertAt, `#include "${name}"\n`)
+            } catch (e) { }
         });
     }
 
     private AddExternalIncludes(includes: string[], insertAt: vscode.Position) {
         const text = this.source.getText();
-        includes.map(include => GetTail(include, "/")).forEach(name => {
-            const res = text.match(`#include\\s*<${name}>`);
-            if (res === null || res.length === 0)
-                this.workEdits.insert(this.source.uri, insertAt, `#include <${name}>\n`)
+        includes.forEach(name => {
+            try {
+                const res = findExternalInclude(text, name);
+                if (res.length === 0)
+                    this.workEdits.insert(this.source.uri, insertAt, `#include <${name}>\n`)
+            } catch (e) { }
+
         });
     }
 
-    public async MatchesAtCursor() {
-        const pos = ActivePos()
-        if (pos) {
-            let line = this.source.lineAt(pos.line);
-
-            const index = this.source.offsetAt(pos) - this.source.offsetAt(new vscode.Position(pos.line, 0));
-
-            let identifiers = this.GetElligibleMatches(line.text);
-            identifiers = identifiers.filter(id => {
-                if (id.index) {
-                    const len = Math.max(...id.filter(s => s !== undefined).map(s => s.length))
-                    return id.index <= index && index < id.index + len;
-                }
-                return false;
-            });
-
-            return identifiers;
-        }
-        return [];
-    }
 
     public async AddIncludeAtCursor() {
-        let identifiers = await this.MatchesAtCursor();
-        this.AddIncludeForMatch(identifiers);
+        let identifiers = MatchesAtCursor(this.source);
+        await this.AddIncludeForMatch(identifiers);
     }
 
     public async AddIncludeForMatch(identifiers: RegExpMatchArray[]) {
@@ -79,7 +201,7 @@ class AddIncludes {
         try {
             let text = this.source.getText();
 
-            const identifiers = this.GetElligibleMatches(text);
+            const identifiers = GetElligibleMatches(text, this.source.getText());
 
             const idPositions = identifiers.filter(i => i.index !== undefined)
                 //@ts-ignore
@@ -91,111 +213,13 @@ class AddIncludes {
         } catch (e) { }
     }
 
-    private GetElligibleMatches(text: string) {
 
-        const invalids = [...text.matchAll(new RegExp(`(?:\\/\\/(?:\\\\\\n|[^\\n])*\\n)|(?:\\/\\*[\\s\\S]*?\\*\\/)|((?:R"([^(\\\\\\s]{0,16})\\([^)]*\\)\\2")|(?:@"[^"]*?")|(?:"(?:\\?\\?'|\\\\\\\\|\\\\"|\\\\\\n|[^"])*?")|(?:'(?:\\\\\\\\|\\\\'|\\\\\\n|[^'])*?'))`, 'g'))]
-        let matches = [...text.matchAll(new RegExp("[_|A-Z|a-z]+[:|_|A-Z|a-z|0-9]+", 'g'))];
 
-        matches = matches.filter(match =>
-            invalids.every(invalid => {
-                if (!match.index)
-                    return false;
-                if (invalid.index) {
-                    const len = Math.max(...invalid.filter(s => s !== undefined).map(s => s.length))
-                    //check that the match is outside the invalids range
-                    const outside = invalid.index > match.index || match.index >= invalid.index + len;
-                    return outside;
-                } else {
-                    return true;
-                }
-            })
-        );
-
-        if (matches) {
-            try {
-                matches = matches.filter((s) => !reservedWords.includes(s.toString()));
-
-                //remove include matches
-                const includePositions = GetIncludes(this.source.getText());
-                matches = matches.filter((s) => !includePositions.includes(s.toString()));
-
-                const identifiers = [... new Set(matches)];
-                return identifiers;
-
-            } catch (e) { }
-        }
-
-        return []
-    }
 
 
     private async AddIncludesFor(idPositions: vscode.Position[], identifiers: string[]) {
 
-        let uris: vscode.Uri[] = [];
-        let stds: string[] = []
-
-        for (let index = 0; index < identifiers.length; index++) {
-
-            const stdidentifier = identifiers[index].replace("std::", "");
-            const isStd = cppStdsIds.includes(stdidentifier)
-            if (isStd) {
-                stds.push(cppStdMap[stdidentifier]);
-            }
-
-            if(!isStd || this.giveAll){
-                const location: vscode.Location[] = await vscode.commands.executeCommand(
-                    "vscode.executeDeclarationProvider",
-                    this.source.uri,
-                    idPositions[index]
-                );
-
-                if(this.giveAll){
-                    uris.push(...location.map(l => l.uri));
-                }else if(location.length > 0) {
-                    uris.push(location[0].uri);
-                }
-            }
-
-        }
-
-        uris = uris.filter(uri => uri.toString() !== this.source.uri.toString())
-        uris = uris.filter(uri => !uri.path.endsWith(".c") && !uri.path.endsWith(".cpp"))
-
-        const paths = uris;
-
-        const workspaceFolders = vscode.workspace.workspaceFolders?.map(folder => folder.uri) || [];
-
-        let localPaths: string[] = []
-        let externalPaths: string[] = [];
-
-        let ignoreFolderss = workspaceFolders.map(wf => this.externalIncludeDirectories.map(ed => wf.toString() + "/" + ed));
-        let ignoreFolders: string[] = []
-        if (ignoreFolderss.length > 0) {
-            ignoreFolders = ignoreFolderss.reduce((l, r) => [...l, ...r]);
-        }
-
-        //have to use .toString instead .path as drive letters are inconsientally capitalized 
-        paths.forEach(path => {
-            const isOutsideWorkspace = workspaceFolders.every((wf => !path.toString().startsWith(wf.toString())));
-            if (isOutsideWorkspace) {
-                externalPaths.push(path.path);
-            } else {
-                const matchesExternalIncludeIgnore = ignoreFolders.some((ignore => path.toString().startsWith(ignore)));
-                if (matchesExternalIncludeIgnore) {
-                    externalPaths.push(path.path);
-                } else {
-                    localPaths.push(path.path);
-                }
-
-            }
-        })
-
-        // let localPaths = paths.filter(path => workspaceFolders.some((wf => path.toString().startsWith(wf.toString())))).map(u => u.path)
-        // let externalPaths = paths.filter(path => workspaceFolders.every((wf => !path.toString().startsWith(wf.toString())))).map(u => u.path)
-
-        externalPaths = [ ...stds, ...externalPaths];
-        externalPaths = [... new Set(externalPaths)]
-        localPaths = [... new Set(localPaths)]
+        const { localPaths, externalPaths } = await GetIncludesFor(idPositions, identifiers, this.giveAll, this.source);
 
         const insertPos = FindIncludeLocation(this.source);
         this.AddExternalIncludes(externalPaths, insertPos);
@@ -251,26 +275,21 @@ export class AddIncludeCodeAction implements vscode.CodeActionProvider {
         vscode.CodeActionKind.QuickFix,
     ];
 
-    public async provideCodeActions(document: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
-        
-        const source = ActiveDoc();
+    public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
 
-        if (!source)
-            throw "no active text exitor window";
-    
         const adder = new AddIncludes(source, [], true);
 
 
-        let identifiers = await adder.MatchesAtCursor();
+        let identifiers = MatchesAtCursor(adder.source);
         if (identifiers.length === 0)
             return undefined;
 
         await adder.AddIncludeForMatch(identifiers);
 
-        return adder.workEdits.get(document.uri).map(edit => {
+        return adder.workEdits.get(source.uri).map(edit => {
             const fix = new vscode.CodeAction(edit.newText, vscode.CodeActionKind.QuickFix);
             fix.edit = new vscode.WorkspaceEdit();
-            fix.edit.set(document.uri, [edit]);
+            fix.edit.set(source.uri, [edit]);
             return fix;
         })
 
