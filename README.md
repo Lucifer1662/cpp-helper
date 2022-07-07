@@ -18,6 +18,7 @@ Describe specific features of your extension including screenshots of your exten
 
 
 All context menu items can be removed in the settings, by default they are all present.
+Include/external folders can added in the config settings, to make includes correct.
 
 ---
 
