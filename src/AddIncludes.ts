@@ -8,44 +8,36 @@ class AddIncludes {
     source: vscode.TextDocument;
     srcSymbols: vscode.DocumentSymbol[] = [];
     public workEdits = new vscode.WorkspaceEdit();
-    externalIncludeDirectories: string[] = []
+    externalIncludeDirectories: string[] = [];
+    giveAll: boolean;
     constructor(
         source: vscode.TextDocument,
         srcSymbols: vscode.DocumentSymbol[] = [],
+        giveAll: boolean = false,
     ) {
         this.source = source;
         this.srcSymbols = srcSymbols;
         const config = getConfiguration();
         this.externalIncludeDirectories = config.externalIncludeFolders;
+        this.giveAll = giveAll;
     }
 
     private AddInternalIncludes(includes: string[], insertAt: vscode.Position) {
-        let content = "";
         const text = this.source.getText();
-
         includes.map(include => GetTail(include, "/")).forEach(name => {
             const res = text.match(`#include\\s*"${name}"`);
             if (res === null || res.length === 0)
-                content += `#include "${name}"\n`
+                this.workEdits.insert(this.source.uri, insertAt, `#include "${name}"\n`)
         });
-
-        if(content !== "")
-            this.workEdits.insert(this.source.uri, insertAt, content)
     }
 
     private AddExternalIncludes(includes: string[], insertAt: vscode.Position) {
-        let content = "";
         const text = this.source.getText();
-
         includes.map(include => GetTail(include, "/")).forEach(name => {
-
             const res = text.match(`#include\\s*<${name}>`);
             if (res === null || res.length === 0)
-                content += `#include <${name}>\n`
+                this.workEdits.insert(this.source.uri, insertAt, `#include <${name}>\n`)
         });
-
-        if(content !== "")
-            this.workEdits.insert(this.source.uri, insertAt, content)
     }
 
     public async MatchesAtCursor() {
@@ -74,7 +66,7 @@ class AddIncludes {
         this.AddIncludeForMatch(identifiers);
     }
 
-    public async AddIncludeForMatch(identifiers : RegExpMatchArray[]) {
+    public async AddIncludeForMatch(identifiers: RegExpMatchArray[]) {
         const pos = ActivePos()
         if (pos) {
             if (identifiers.length > 0) {
@@ -145,15 +137,21 @@ class AddIncludes {
         for (let index = 0; index < identifiers.length; index++) {
 
             const stdidentifier = identifiers[index].replace("std::", "");
-            if (cppStdsIds.includes(stdidentifier)) {
+            const isStd = cppStdsIds.includes(stdidentifier)
+            if (isStd) {
                 stds.push(cppStdMap[stdidentifier]);
-            } else {
+            }
+
+            if(!isStd || this.giveAll){
                 const location: vscode.Location[] = await vscode.commands.executeCommand(
-                    "vscode.executeDefinitionProvider",
+                    "vscode.executeDeclarationProvider",
                     this.source.uri,
                     idPositions[index]
                 );
-                if (location.length > 0) {
+
+                if(this.giveAll){
+                    uris.push(...location.map(l => l.uri));
+                }else if(location.length > 0) {
                     uris.push(location[0].uri);
                 }
             }
@@ -195,7 +193,7 @@ class AddIncludes {
         // let localPaths = paths.filter(path => workspaceFolders.some((wf => path.toString().startsWith(wf.toString())))).map(u => u.path)
         // let externalPaths = paths.filter(path => workspaceFolders.every((wf => !path.toString().startsWith(wf.toString())))).map(u => u.path)
 
-        externalPaths = [...externalPaths, ...stds];
+        externalPaths = [ ...stds, ...externalPaths];
         externalPaths = [... new Set(externalPaths)]
         localPaths = [... new Set(localPaths)]
 
@@ -230,14 +228,14 @@ class AddIncludes {
 
 
 export async function addIncludes() {
-    await (await CreateAddIncludes()).CreateAll();
+    await CreateAddIncludes().CreateAll();
 }
 
 export async function addIncludeFor() {
-    await (await CreateAddIncludes()).CreateAt();
+    await CreateAddIncludes().CreateAt();
 }
 
-export async function CreateAddIncludes(): Promise<AddIncludes> {
+export function CreateAddIncludes() {
     const source = ActiveDoc();
 
     if (!source)
@@ -250,30 +248,33 @@ export async function CreateAddIncludes(): Promise<AddIncludes> {
 export class AddIncludeCodeAction implements vscode.CodeActionProvider {
 
     public static readonly providedCodeActionKinds = [
-        vscode.CodeActionKind.QuickFix, 
+        vscode.CodeActionKind.QuickFix,
     ];
 
     public async provideCodeActions(document: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
+        
+        const source = ActiveDoc();
 
-        const adder = (await CreateAddIncludes());
+        if (!source)
+            throw "no active text exitor window";
+    
+        const adder = new AddIncludes(source, [], true);
+
 
         let identifiers = await adder.MatchesAtCursor();
-        if(identifiers.length === 0)
+        if (identifiers.length === 0)
             return undefined;
 
         await adder.AddIncludeForMatch(identifiers);
 
-        let text = `Add include for ${identifiers[0].toString()}`;
-        if(adder.workEdits.get(document.uri).length > 0){
-            text = adder.workEdits.get(document.uri)[0].newText;
-        }
+        return adder.workEdits.get(document.uri).map(edit => {
+            const fix = new vscode.CodeAction(edit.newText, vscode.CodeActionKind.QuickFix);
+            fix.edit = new vscode.WorkspaceEdit();
+            fix.edit.set(document.uri, [edit]);
+            return fix;
+        })
 
-        const fix = new vscode.CodeAction(text, vscode.CodeActionKind.QuickFix);
-        fix.edit = adder.workEdits;
 
-        return [
-            fix
-        ];
     }
 
 }

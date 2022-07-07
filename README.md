@@ -108,3 +108,6 @@ Added add includes automatically
 ### 1.4.0
 Add specific include for clicked on symbol
 Add quick fix suggestion to include symbol
+
+### 1.4.1
+Add include quick fix to show multiple options for include
