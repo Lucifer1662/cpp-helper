@@ -22,7 +22,7 @@ class Person {
 
     Identity getIdentity() { return identity; }
 
-    void getIdentity(Identity identity) { this->identity = identity; }
+    void getIdentity(Identity identity) ;
 
     std::string getName();
 };

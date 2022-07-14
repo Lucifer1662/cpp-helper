@@ -3,4 +3,7 @@
 
 struct Erny{
     Bert bert;
+
+
+    void foo();
 };

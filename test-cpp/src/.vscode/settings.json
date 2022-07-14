@@ -45,5 +45,8 @@
         "typeinfo": "cpp",
         "ctime": "cpp",
         "erny": "cpp"
-    }
+    },
+    "lukes-cpp-helper.buildAndReportGccCmds": [
+        "more out"
+    ]
 }

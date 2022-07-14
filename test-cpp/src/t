@@ -1,0 +1,148 @@
+--------------------------------------------------------
+/usr/include/c++/10/ext/new_allocator.h
+Line: 150
+
+no matching function for call to ‘std::unique_ptr<Expression*>::unique_ptr(Expression*&)’
+  150 |  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/10/memory:83,
+                 from /workspaces/excel/src/main.cc:5:
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/hashtable_policy.h
+Line: 1379
+
+no match for call to ‘(const std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >) (const std::_List_iterator<std::unique_ptr<Expression*> >&)’
+ 1379 |  return _M_h1()(__k);
+      |         ~~~~~~~^~~~~
+In file included from /usr/include/x86_64-linux-gnu/c++/10/bits/c++allocator.h:33,
+                 from /usr/include/c++/10/bits/allocator.h:46,
+                 from /usr/include/c++/10/unordered_map:40,
+                 from /usr/include/c++/10/functional:61,
+                 from /workspaces/excel/src/main.cc:2:
+/usr/include/c++/10/ext/new_allocator.h: In instantiation of ‘void __gnu_cxx::new_allocator<_Tp>::construct(_Up*, _Args&& ...) [with _Up = std::unique_ptr<Expression*>; _Args = {Expression*&}; _Tp = std::_List_node<std::unique_ptr<Expression*> >]’:
+/usr/include/c++/10/bits/alloc_traits.h:512:17:   required from ‘static void std::allocator_traits<std::allocator<_Tp1> >::construct(std::allocator_traits<std::allocator<_Tp1> >::allocator_type&, _Up*, _Args&& ...) [with _Up = std::unique_ptr<Expression*>; _Args = {Expression*&}; _Tp = std::_List_node<std::unique_ptr<Expression*> >; std::allocator_traits<std::allocator<_Tp1> >::allocator_type = std::allocator<std::_List_node<std::unique_ptr<Expression*> > >]’
+/usr/include/c++/10/bits/stl_list.h:637:33:   required from ‘std::__cxx11::list<_Tp, _Alloc>::_Node* std::__cxx11::list<_Tp, _Alloc>::_M_create_node(_Args&& ...) [with _Args = {Expression*&}; _Tp = std::unique_ptr<Expression*>; _Alloc = std::allocator<std::unique_ptr<Expression*> >; std::__cxx11::list<_Tp, _Alloc>::_Node = std::__cxx11::list<std::unique_ptr<Expression*> >::_Node]’
+/usr/include/c++/10/bits/stl_list.h:1911:32:   required from ‘void std::__cxx11::list<_Tp, _Alloc>::_M_insert(std::__cxx11::list<_Tp, _Alloc>::iterator, _Args&& ...) [with _Args = {Expression*&}; _Tp = std::unique_ptr<Expression*>; _Alloc = std::allocator<std::unique_ptr<Expression*> >; std::__cxx11::list<_Tp, _Alloc>::iterator = std::__cxx11::list<std::unique_ptr<Expression*> >::iterator]’
+/usr/include/c++/10/bits/stl_list.h:1227:19:   required from ‘std::__cxx11::list<_Tp, _Alloc>::reference std::__cxx11::list<_Tp, _Alloc>::emplace_back(_Args&& ...) [with _Args = {Expression*&}; _Tp = std::unique_ptr<Expression*>; _Alloc = std::allocator<std::unique_ptr<Expression*> >; std::__cxx11::list<_Tp, _Alloc>::reference = std::unique_ptr<Expression*>&]’
+/workspaces/excel/src/main.cc:33:35:   required from here
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/hashtable_policy.h
+Line: 1377
+
+static assertion failed: hash function must be invocable with an argument of key type
+ 1377 |  static_assert(__is_invocable<const _H1&, const _Key&>{},
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/hashtable_policy.h
+Line: 1379
+
+no match for call to ‘(const std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >) (const std::_List_iterator<std::unique_ptr<Expression*> >&)’
+ 1379 |  return _M_h1()(__k);
+      |         ~~~~~~~^~~~~
+/usr/include/c++/10/bits/hashtable_policy.h: In instantiation of ‘std::__detail::_Hash_code_base<_Key, _Value, _ExtractKey, _H1, _H2, std::__detail::_Default_ranged_hash, true>::__hash_code std::__detail::_Hash_code_base<_Key, _Value, _ExtractKey, _H1, _H2, std::__detail::_Default_ranged_hash, true>::_M_hash_code(const _Key&) const [with _Key = std::_List_iterator<std::unique_ptr<Expression*> >; _Value = std::_List_iterator<std::unique_ptr<Expression*> >; _ExtractKey = std::__detail::_Identity; _H1 = std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >; _H2 = std::__detail::_Mod_range_hashing; std::__detail::_Hash_code_base<_Key, _Value, _ExtractKey, _H1, _H2, std::__detail::_Default_ranged_hash, true>::__hash_code = long unsigned int]’:
+/usr/include/c++/10/bits/hashtable.h:1452:46:   required from ‘std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::iterator std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::find(const key_type&) [with _Key = std::_List_iterator<std::unique_ptr<Expression*> >; _Value = std::_List_iterator<std::unique_ptr<Expression*> >; _Alloc = std::allocator<std::_List_iterator<std::unique_ptr<Expression*> > >; _ExtractKey = std::__detail::_Identity; _Equal = std::equal_to<std::_List_iterator<std::unique_ptr<Expression*> > >; _H1 = std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >; _H2 = std::__detail::_Mod_range_hashing; _Hash = std::__detail::_Default_ranged_hash; _RehashPolicy = std::__detail::_Prime_rehash_policy; _Traits = std::__detail::_Hashtable_traits<true, true, true>; std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::iterator = std::__detail::_Hashtable_base<std::_List_iterator<std::unique_ptr<Expression*> >, std::_List_iterator<std::unique_ptr<Expression*> >, std::__detail::_Identity, std::equal_to<std::_List_iterator<std::unique_ptr<Expression*> > >, std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Hashtable_traits<true, true, true> >::iterator; std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::key_type = std::_Hashtable<std::_List_iterator<std::unique_ptr<Expression*> >, std::_List_iterator<std::unique_ptr<Expression*> >, std::allocator<std::_List_iterator<std::unique_ptr<Expression*> > >, std::__detail::_Identity, std::equal_to<std::_List_iterator<std::unique_ptr<Expression*> > >, std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<true, true, true> >::key_type]’
+/usr/include/c++/10/bits/unordered_set.h:650:25:   required from ‘std::unordered_set<_Value, _Hash, _Pred, _Alloc>::iterator std::unordered_set<_Value, _Hash, _Pred, _Alloc>::find(const key_type&) [with _Value = std::_List_iterator<std::unique_ptr<Expression*> >; _Hash = std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >; _Pred = std::equal_to<std::_List_iterator<std::unique_ptr<Expression*> > >; _Alloc = std::allocator<std::_List_iterator<std::unique_ptr<Expression*> > >; std::unordered_set<_Value, _Hash, _Pred, _Alloc>::iterator = std::__detail::_Hashtable_base<std::_List_iterator<std::unique_ptr<Expression*> >, std::_List_iterator<std::unique_ptr<Expression*> >, std::__detail::_Identity, std::equal_to<std::_List_iterator<std::unique_ptr<Expression*> > >, std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Hashtable_traits<true, true, true> >::iterator; std::unordered_set<_Value, _Hash, _Pred, _Alloc>::key_type = std::_Hashtable<std::_List_iterator<std::unique_ptr<Expression*> >, std::_List_iterator<std::unique_ptr<Expression*> >, std::allocator<std::_List_iterator<std::unique_ptr<Expression*> > >, std::__detail::_Identity, std::equal_to<std::_List_iterator<std::unique_ptr<Expression*> > >, std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<true, true, true> >::key_type]’
+/workspaces/excel/src/main.cc:106:26:   required from here
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/hashtable_policy.h
+Line: 1377
+
+static assertion failed: hash function must be invocable with an argument of key type
+ 1377 |  static_assert(__is_invocable<const _H1&, const _Key&>{},
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/stl_algo.h
+Line: 3839
+
+no match for call to ‘(DirtyFinder::Eval(EId)::<lambda(std::__detail::_Node_iterator<std::pair<const std::_List_iterator<std::unique_ptr<Expression*> >, std::_List_iterator<std::unique_ptr<Expression*> > >, false, true>)>) (std::pair<const std::_List_iterator<std::unique_ptr<Expression*> >, std::_List_iterator<std::unique_ptr<Expression*> > >&)’
+ 3839 |  __f(*__first);
+      |  ~~~^~~~~~~~~~
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/functional_hash.h
+Line: 101
+
+‘std::__hash_enum<_Tp, <anonymous> >::~__hash_enum() [with _Tp = std::_List_iterator<std::unique_ptr<Expression*> >; bool <anonymous> = false]’ is private within this context
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/hashtable_policy.h
+Line: 1109
+
+use of deleted function ‘std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >::~hash()’
+In file included from /usr/include/c++/10/functional:56,
+                 from /workspaces/excel/src/main.cc:2:
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/hashtable_policy.h
+Line: 1341
+
+use of deleted function ‘std::__detail::_Hashtable_ebo_helper<1, std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >, true>::~_Hashtable_ebo_helper()’
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/hashtable_policy.h
+Line: 1725
+
+use of deleted function ‘std::__detail::_Hash_code_base<std::_List_iterator<std::unique_ptr<Expression*> >, std::_List_iterator<std::unique_ptr<Expression*> >, std::__detail::_Identity, std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, true>::~_Hash_code_base()’
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/hashtable.h
+Line: 1389
+
+use of deleted function ‘std::__detail::_Hashtable_base<std::_List_iterator<std::unique_ptr<Expression*> >, std::_List_iterator<std::unique_ptr<Expression*> >, std::__detail::_Identity, std::equal_to<std::_List_iterator<std::unique_ptr<Expression*> > >, std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Hashtable_traits<true, true, true> >::~_Hashtable_base()’
+ 1389 |     }
+      |     ^
+In file included from /usr/include/c++/10/bits/hashtable.h:35,
+                 from /usr/include/c++/10/unordered_map:46,
+                 from /usr/include/c++/10/functional:61,
+                 from /workspaces/excel/src/main.cc:2:
+
+--------------------------------------------------------
+/workspaces/excel/src/main.cc
+Line: 134
+
+‘class std::unique_ptr<Expression*>’ has no member named ‘eval’
+  134 |                             (**it).eval();
+      |                                    ^~~~
+In file included from /usr/include/c++/10/unordered_map:46,
+                 from /usr/include/c++/10/functional:61,
+                 from /workspaces/excel/src/main.cc:2:
+/usr/include/c++/10/bits/hashtable.h: In instantiation of ‘std::_Hashtable<_Key, _Value, _Alloc, _ExtractKey, _Equal, _H1, _H2, _Hash, _RehashPolicy, _Traits>::~_Hashtable() [with _Key = std::_List_iterator<std::unique_ptr<Expression*> >; _Value = std::_List_iterator<std::unique_ptr<Expression*> >; _Alloc = std::allocator<std::_List_iterator<std::unique_ptr<Expression*> > >; _ExtractKey = std::__detail::_Identity; _Equal = std::equal_to<std::_List_iterator<std::unique_ptr<Expression*> > >; _H1 = std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >; _H2 = std::__detail::_Mod_range_hashing; _Hash = std::__detail::_Default_ranged_hash; _RehashPolicy = std::__detail::_Prime_rehash_policy; _Traits = std::__detail::_Hashtable_traits<true, true, true>]’:
+/usr/include/c++/10/bits/unordered_set.h:97:11:   required from here
+
+--------------------------------------------------------
+/workspaces/excel/src/main.cc
+Line: 130
+
+no matching function for call to ‘DirtyFinder::Eval()’
+  130 |         finder.Eval();
+      |                     ^
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/functional_hash.h
+Line: 101
+
+‘std::__hash_enum<_Tp, <anonymous> >::~__hash_enum() [with _Tp = std::_List_iterator<std::unique_ptr<Expression*> >; bool <anonymous> = false]’ is private within this context
+  101 |     struct hash : __hash_enum<_Tp>
+      |            ^~~~
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/functional_hash.h
+Line: 101
+
+no matching function for call to ‘std::__hash_enum<std::_List_iterator<std::unique_ptr<Expression*> >, false>::__hash_enum()’
+
+--------------------------------------------------------
+/usr/include/c++/10/bits/unordered_set.h
+Line: 222
+
+use of deleted function ‘std::hash<std::_List_iterator<std::unique_ptr<Expression*> > >::hash()’
+  222 |       const hasher& __hf = hasher(),
+      |                            ^~~~~~~~
+In file included from /usr/include/c++/10/functional:56,
+                 from /workspaces/excel/src/main.cc:2:
+

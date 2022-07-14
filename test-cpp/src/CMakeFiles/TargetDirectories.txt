@@ -1,0 +1,3 @@
+/workspaces/cpp-helper/test-cpp/src/CMakeFiles/rebuild_cache.dir
+/workspaces/cpp-helper/test-cpp/src/CMakeFiles/edit_cache.dir
+/workspaces/cpp-helper/test-cpp/src/CMakeFiles/excel.dir

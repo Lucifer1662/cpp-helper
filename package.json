@@ -2,7 +2,7 @@
   "name": "lukes-cpp-helper",
   "displayName": "Luke's C++ helper",
   "description": "helps write cpp code",
-  "version": "1.5.2",
+  "version": "1.5.4",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
   "publisher": "personal-luke",
   "engines": {
@@ -19,6 +19,7 @@
     "onCommand:cpp-helper.moveToHeader",
     "onCommand:cpp-helper.addIncludes",
     "onCommand:cpp-helper.addIncludeFor",
+    "onCommand:cpp-helper.gccErrors",
     "onLanguage:markdown",
     "onLanguage:cpp"
   ],
@@ -52,6 +53,10 @@
       {
         "command": "cpp-helper.addIncludeFor",
         "title": "Add Includes For"
+      },
+      {
+        "command": "cpp-helper.gccErrors",
+        "title": "Build and parse errors (gcc)"
       }
     ],
     "menus": {
@@ -98,7 +103,9 @@
       "properties": {
         "lukes-cpp-helper.externalIncludeFolders": {
           "type": "array",
-          "default": ["include"],
+          "default": [
+            "include"
+          ],
           "items": {
             "type": "string"
           },
@@ -106,11 +113,29 @@
         },
         "lukes-cpp-helper.haveInContextMenu": {
           "type": "array",
-          "default": ["moveImplementation", "moveAllImplementation", "createConstructor", "createDefaultConstructors", "moveToHeader", "addIncludes", "addIncludeFor"],
+          "default": [
+            "moveImplementation",
+            "moveAllImplementation",
+            "createConstructor",
+            "createDefaultConstructors",
+            "moveToHeader",
+            "addIncludes",
+            "addIncludeFor"
+          ],
           "items": {
             "type": "string"
           },
           "description": "What commands should be available in the context menu, by default they are all present. Reload to vscode for effects to take place. \n Valid items: moveImplementation, moveAllImplementation, createConstructor, createDefaultConstructors, moveToHeader, addIncludes, addIncludeFor "
+        },
+        "lukes-cpp-helper.buildAndReportGccCmds": {
+          "type": "array",
+          "default": [
+            "${workspaceFolder}/build"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": ""
         }
       }
     }
@@ -137,8 +162,6 @@
     "mocha": "^10.0.0",
     "typescript": "^4.7.2",
     "node-fetch": "^2.6.1"
-
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

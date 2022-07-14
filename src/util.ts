@@ -124,7 +124,8 @@ export const configName = 'lukes-cpp-helper';
 
 export interface Configuration{
     externalIncludeFolders: string[],
-    haveInContextMenu: string[]
+    haveInContextMenu: string[],
+    buildAndReportGccCmds: string[],
 }
 
 export function getConfiguration(){
@@ -132,6 +133,7 @@ export function getConfiguration(){
     return {
         externalIncludeFolders: config.get<string[]>('externalIncludeFolders'),
         haveInContextMenu: config.get<string[]>('haveInContextMenu'),
+        buildAndReportGccCmds: config.get<string[]>('buildAndReportGccCmds'),
     } as Configuration
 }
 
@@ -201,3 +203,11 @@ export function MatchesAtCursor(source: vscode.TextDocument) {
 export function plainTextInRegex(s:string){
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
+
+ //Create output channel
+export const outputChan = vscode.window.createOutputChannel("Luke's Cpp Helper");
+
+
+export const diagnostics = vscode.languages.createDiagnosticCollection("Luke's Cpp Helper");
+
+

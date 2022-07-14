@@ -1,3 +1,9 @@
 #pragma once
 
-class Bert{};
+class Bert{
+
+
+    void foo(){
+        int x = 0;
+    }
+};

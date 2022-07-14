@@ -2,12 +2,13 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import { AddIncludeCodeAction, addIncludeFor, addIncludes } from "./AddIncludes";
+import { buildAndReportGcc, GccTerminalLinkProvider } from "./buildGcc";
 import { createConstr } from "./CreateConstructor";
 import { createDefaultConstr } from "./CreateDefaultConstructor";
 import { ForwardDeclarationCodeAction } from "./ForwardDeclaration";
 import { MoveImpAll, MoveImplCodeAction, MoveImpSelection } from "./MoveImpl";
 import { moveToHeader } from "./MoveToHeader";
-import { getConfiguration } from "./util";
+import { diagnostics, getConfiguration } from "./util";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -96,7 +97,16 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCodeActionsProvider('cpp', new MoveImplCodeAction(), {
       providedCodeActionKinds: MoveImplCodeAction.providedCodeActionKinds
     }));
+
+
+  context.subscriptions.push(diagnostics);
+  vscode.window.registerTerminalLinkProvider(new GccTerminalLinkProvider())
+
+  context.subscriptions.push(vscode.commands.registerCommand('cpp-helper.gccErrors', () => {
+    buildAndReportGcc();
+  }));
 }
+
 
 
 // this method is called when your extension is deactivated

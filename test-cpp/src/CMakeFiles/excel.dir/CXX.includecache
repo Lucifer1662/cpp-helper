@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/workspaces/cpp-helper/test-cpp/src/main.cc
+person.h
+/workspaces/cpp-helper/test-cpp/src/person.h
+
+/workspaces/cpp-helper/test-cpp/src/person.h
+
