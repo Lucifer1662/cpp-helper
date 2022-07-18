@@ -114,7 +114,7 @@ export async function GetIncludesFor(idPositions: vscode.Position[], identifiers
     const longestMatches = localPaths.map(p => longestMatch(p, local));
     const backslashes = longestMatches.map(s => backslashesNeeded(s, local));
 
-    const trimmedLocalPaths = localPaths.map((p,i)=>p.substring(longestMatches[i].length));
+    const trimmedLocalPaths = localPaths.map((p, i) => p.substring(longestMatches[i].length));
     const newLocalPaths = trimmedLocalPaths.map((p, i) => backslashes[i] + p);
 
     return { localPaths: newLocalPaths, externalPaths };
@@ -140,7 +140,7 @@ export function findInternalIncludeAll(text: string, name: string) {
     const plain = plainTextInRegex(name);
     try {
         return [...text.matchAll(new RegExp(`#include\\s*"${plain}"`, 'g'))];
-    } catch (e) {}
+    } catch (e) { }
     return [];
 }
 
@@ -295,6 +295,20 @@ export class AddIncludeCodeAction implements vscode.CodeActionProvider {
         })
 
 
+    }
+
+}
+
+export class AddAllIncludeCodeAction implements vscode.CodeActionProvider {
+
+    public static readonly providedCodeActionKinds = [
+        vscode.CodeActionKind.QuickFix,
+    ];
+
+    public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
+        const fix = new vscode.CodeAction("Add all includes", vscode.CodeActionKind.QuickFix);
+        fix.command = { command: "cpp-helper.addIncludes", title: "Include All" } as vscode.Command;
+        return [fix];
     }
 
 }

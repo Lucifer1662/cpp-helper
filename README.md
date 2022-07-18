@@ -14,8 +14,10 @@ Describe specific features of your extension including screenshots of your exten
 4. Move content to a new header file
 5. Creates common default implemented constructors
 6. Generate constructor with all attributes as parameters
-7. Add all includes
-8. Add specific includes via context menu, or quick fix
+7. Create destructor
+8. Add all includes
+9. Add specific includes via context menu, or quick fix
+10. Add missing virtual functions
 
 
 All context menu items can be removed in the settings, by default they are all present. </br>
@@ -69,11 +71,21 @@ Creates the basic default constructors and assignment operator
 
 ---
 
+### Create Destructors
+Creates the default destructors
+
+![](docs/imgs/Create%20Destructor.gif)
+
+
+---
+
 ### Add All missing Icludes
 Adds all the missing includes. Works by looking at every word and seeing if its declaration is missing from the includes.</br>
 It contains hardcoded mappings of the standard library so similar named symbols might get resolve to the std lib instead of user defined.
 
 ![](docs/imgs/Add%20All%20Includes.gif)
+
+---
 
 
 ### Add Include for Specific Symbol
@@ -84,6 +96,9 @@ Available as command or in context menu or as a quick fix.
 ![](docs/imgs/Quick%20Fix%20Include.gif)
 
 ![](docs/imgs/Add%20Include%20For.gif)
+
+---
+
 
 
 ### Forward Declare of struct/class
@@ -96,6 +111,14 @@ The steps are:
 2. Add in forward declaration. Does not handle spacing currently
    
 ![](docs/imgs/Forward%20Declare.gif)
+
+---
+
+
+### Add Missing Functions
+Click on the specific interface that a class extends, a quick fix will appear to add the missing virtual functions
+![](docs/imgs/Add%20Missing%20Functions.gif)
+
 
 
 
@@ -144,3 +167,20 @@ Fixed bad import
 ### 1.5.3
 Added move to cpp to quick fix </br>
 Fixed a back slash forward slash problem when generating include
+
+### 1.5.4
+Added creating destructor </br>
+Added create con/destructor to quick fix </br>
+Added move to header to quick fix  </br>
+Added include all to quick fix  </br>
+Can now undo file creation for move to 
+
+### 1.6.0
+Added quick fix to add all virtual functions 
+
+### 1.6.1
+Adds virtual functions recursively </br>
+Does not add already existing functions
+
+
+

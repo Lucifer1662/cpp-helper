@@ -25,59 +25,51 @@ class MoveToHeader {
     }
 
 
-    async GetDestination() {
-        if (this.destination)
-            return this.destination;
-        try {
-            return this.destination = await GetDocument(this.destinationUri);
-        } catch (e) {
-            var fileContent = "#pragma once\n\n";
-
-            var enc = new TextEncoder();
-            await vscode.workspace.fs.writeFile(
-                vscode.Uri.file(this.destinationUri),
-                enc.encode(fileContent)
-            );
-        }
-
-        //if it fails again throw exception
-        return this.destination = await vscode.workspace.openTextDocument(this.destinationUri);
-
-    }
-
-
     private RemoveFromSource() {
         this.workEdits.delete(this.source.uri, this.selection);
     }
 
-    private CopyToDest(scope: string[]) {
-        if (this.destination) {
-            var content = "";
+    private async CopyToDest(scope: string[]) {
 
-            if (scope.length > 0) {
-                content += "namespace "
-
-                scope.forEach((s, index) => {
-                    content += s;
-                    if (index != scope.length - 1) {
-                        content += "::";
-                    }
-                })
-
-                content += " {\n"
-            }
-
-            content += this.source.getText(this.selection);
-
-            if (scope.length > 0) {
-                content += "\n}"
-            }
-
-            this.workEdits.insert(vscode.Uri.file(this.destinationUri), new vscode.Position(this.destination.lineCount + 1, 0), content)
+        let lineNumber = 0;
+        try {
+            this.destination = await GetDocument(this.destinationUri);
+            lineNumber = this.destination.lineCount + 1;
+        } catch (e) {
+            this.workEdits.createFile(vscode.Uri.file(this.destinationUri));
         }
+
+        //if it is a new file
+        if (!this.destination) {
+            var fileContent = "#pragma once\n\n";
+            this.workEdits.insert(vscode.Uri.file(this.destinationUri), new vscode.Position(0, 0), fileContent);
+        }
+
+        var content = "";
+
+        if (scope.length > 0) {
+            content += "\nnamespace "
+
+            scope.forEach((s, index) => {
+                content += s;
+                if (index != scope.length - 1) {
+                    content += "::";
+                }
+            })
+
+            content += " {\n"
+        }
+
+        content += this.source.getText(this.selection);
+
+        if (scope.length > 0) {
+            content += "\n}"
+        }
+
+        this.workEdits.insert(vscode.Uri.file(this.destinationUri), new vscode.Position(lineNumber, 0), content)
     }
 
-    private AddHeadersToSource(){
+    private AddHeadersToSource() {
         let insertionPos = FindIncludeLocation(this.source);
 
         let content = `#include "${this.destinationName}"\n`;
@@ -85,25 +77,27 @@ class MoveToHeader {
         this.workEdits.insert(this.source.uri, insertionPos, content)
     }
 
-
-
     public async Move() {
-        //create new work edits
-        this.workEdits = new vscode.WorkspaceEdit();
-
-        await this.GetDestination();
 
         const symbols = await GetSymbolsDoc(this.source)
         const scopes = findDeepestNamespace(symbols, this.selection);
 
         //copy to cpp
-        this.CopyToDest(scopes);
+        await this.CopyToDest(scopes);
 
         //add header to source
         this.AddHeadersToSource();
 
         //remove from header
         this.RemoveFromSource();
+    }
+
+
+    public async MoveApply() {
+        //create new work edits
+        this.workEdits = new vscode.WorkspaceEdit();
+
+        await this.Move();
 
         //apply edits
         vscode.workspace.applyEdit(this.workEdits);
@@ -113,7 +107,7 @@ class MoveToHeader {
 
 
 export async function moveToHeader() {
-    await (await CreateMoveToHeader()).Move();
+    await (await CreateMoveToHeader()).MoveApply();
 }
 
 
@@ -167,3 +161,22 @@ function findDeepestNamespace(
         }).filter((s) => s.length !== 0)[0] || [];
 }
 
+
+
+export class MoveToHeaderCodeAction implements vscode.CodeActionProvider {
+
+    public static readonly providedCodeActionKinds = [
+        vscode.CodeActionKind.QuickFix,
+    ];
+
+    public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
+        if (range.start.isEqual(range.end)) {
+            return undefined;
+        }
+
+        const fix = new vscode.CodeAction("Move to header", vscode.CodeActionKind.QuickFix);
+        fix.command = { command: "cpp-helper.moveToHeader", title: "Move to header" } as vscode.Command;
+        return [fix];
+    }
+
+}

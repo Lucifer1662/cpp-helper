@@ -1,12 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { AddIncludeCodeAction, addIncludeFor, addIncludes } from "./AddIncludes";
-import { createConstr } from "./CreateConstructor";
-import { createDefaultConstr } from "./CreateDefaultConstructor";
+import { AddAllIncludeCodeAction, AddIncludeCodeAction, addIncludeFor, addIncludes } from "./AddIncludes";
+import { AddMissingFunctionsCodeAction } from "./AddMissingFunctions";
+import { createConstr, CreateConstructorCodeAction } from "./CreateConstructor";
+import { createDefaultConstr, CreateDefaultConstructorCodeAction } from "./CreateDefaultConstructor";
+import { CreateDestructorCodeAction } from "./CreateDestructor";
 import { ForwardDeclarationCodeAction } from "./ForwardDeclaration";
 import { MoveImpAll, MoveImplCodeAction, MoveImpSelection } from "./MoveImpl";
-import { moveToHeader } from "./MoveToHeader";
+import { moveToHeader, MoveToHeaderCodeAction } from "./MoveToHeader";
 import { getConfiguration } from "./util";
 
 // this method is called when your extension is activated
@@ -83,6 +85,17 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "cpp-helper.addMissingVirtualFunctions",
+      (args) => {
+        addIncludeFor();
+      }
+    )
+  );
+
+
+
+  context.subscriptions.push(
     vscode.languages.registerCodeActionsProvider('cpp', new AddIncludeCodeAction(), {
       providedCodeActionKinds: AddIncludeCodeAction.providedCodeActionKinds
     }));
@@ -96,7 +109,43 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCodeActionsProvider('cpp', new MoveImplCodeAction(), {
       providedCodeActionKinds: MoveImplCodeAction.providedCodeActionKinds
     }));
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider('cpp', new CreateConstructorCodeAction(), {
+      providedCodeActionKinds: CreateConstructorCodeAction.providedCodeActionKinds
+    }));
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider('cpp', new CreateDefaultConstructorCodeAction(), {
+      providedCodeActionKinds: CreateDefaultConstructorCodeAction.providedCodeActionKinds
+    }));
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider('cpp', new CreateDestructorCodeAction(), {
+      providedCodeActionKinds: CreateDestructorCodeAction.providedCodeActionKinds
+    }));
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider('cpp', new AddAllIncludeCodeAction(), {
+      providedCodeActionKinds: AddAllIncludeCodeAction.providedCodeActionKinds
+    }));
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider('cpp', new MoveToHeaderCodeAction(), {
+      providedCodeActionKinds: MoveToHeaderCodeAction.providedCodeActionKinds
+    }));
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeActionsProvider('cpp', new AddMissingFunctionsCodeAction(), {
+      providedCodeActionKinds: AddMissingFunctionsCodeAction.providedCodeActionKinds
+    }));
+
+
+
+
+
 }
+
 
 
 // this method is called when your extension is deactivated

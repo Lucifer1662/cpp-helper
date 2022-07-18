@@ -2,7 +2,7 @@
   "name": "lukes-cpp-helper",
   "displayName": "Luke's C++ helper",
   "description": "helps write cpp code",
-  "version": "1.5.2",
+  "version": "1.6.1",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
   "publisher": "personal-luke",
   "engines": {
@@ -19,6 +19,7 @@
     "onCommand:cpp-helper.moveToHeader",
     "onCommand:cpp-helper.addIncludes",
     "onCommand:cpp-helper.addIncludeFor",
+    "onCommand:cpp-helper.addMissingVirtualFunctions",
     "onLanguage:markdown",
     "onLanguage:cpp"
   ],
@@ -52,6 +53,10 @@
       {
         "command": "cpp-helper.addIncludeFor",
         "title": "Add Includes For"
+      },
+      {
+        "command": "cpp-helper.addMissingVirtualFunctions",
+        "title": "Add Missing Virtual Functions"
       }
     ],
     "menus": {

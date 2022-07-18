@@ -32,6 +32,10 @@ class CreateConstructor {
         }
     }
 
+    IsInsideClass(){
+        return this.classSymbol !== undefined;
+    }
+
 
     async GetContent(symbol: vscode.DocumentSymbol) {
         const p = ActivePos();
@@ -68,7 +72,7 @@ class CreateConstructor {
     }
 
 
-    private async CreateConstructor() {
+    public async CreateConstructor() {
         if (this.classSymbol) {
             var content = "";
             content += this.classSymbol.name
@@ -140,3 +144,27 @@ export async function CreateCreateConstructor(): Promise<CreateConstructor> {
 }
 
 
+
+
+export class CreateConstructorCodeAction implements vscode.CodeActionProvider {
+
+    public static readonly providedCodeActionKinds = [
+        vscode.CodeActionKind.QuickFix,
+    ];
+
+    public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
+        const createConstructor = await CreateCreateConstructor();
+
+        if(!createConstructor.IsInsideClass()){
+            return undefined;
+        }
+
+        await createConstructor.CreateConstructor();
+
+        const fix = new vscode.CodeAction("Create Constructor", vscode.CodeActionKind.QuickFix);
+        fix.edit =  createConstructor.workEdits;
+        return [fix];
+
+    }
+
+}

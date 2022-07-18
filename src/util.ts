@@ -6,16 +6,20 @@ export async function GetDocument(uri: string) {
     return await vscode.workspace.openTextDocument(uri);
 }
 
-export async function GetSymbolsDoc(document: vscode.TextDocument) {
+export async function GetSymbolsUri(uri: vscode.Uri) {
     let symbolss = await vscode.commands.executeCommand(
         "vscode.executeDocumentSymbolProvider",
-        document.uri
+        uri
     );
 
     if (symbolss !== undefined)
         return symbolss as vscode.DocumentSymbol[];
 
     return [];
+}
+
+export async function GetSymbolsDoc(document: vscode.TextDocument) {
+    return GetSymbolsUri(document.uri);
 }
 
 export async function GetSymbolsActiveDoc() {
@@ -135,10 +139,14 @@ export function getConfiguration(){
     } as Configuration
 }
 
+function getWords(text :string){
+    return [...text.matchAll(new RegExp("[_|A-Z|a-z]+[:|_|A-Z|a-z|0-9]+", 'g'))];
+}
+
 export function GetElligibleMatches(text: string, allText: string) {
 
     const invalids = [...text.matchAll(new RegExp(`(?:\\/\\/(?:\\\\\\n|[^\\n])*\\n)|(?:\\/\\*[\\s\\S]*?\\*\\/)|((?:R"([^(\\\\\\s]{0,16})\\([^)]*\\)\\2")|(?:@"[^"]*?")|(?:"(?:\\?\\?'|\\\\\\\\|\\\\"|\\\\\\n|[^"])*?")|(?:'(?:\\\\\\\\|\\\\'|\\\\\\n|[^'])*?'))`, 'g'))]
-    let matches = [...text.matchAll(new RegExp("[_|A-Z|a-z]+[:|_|A-Z|a-z|0-9]+", 'g'))];
+    let matches = getWords(text);
 
     matches = matches.filter(match =>
         invalids.every(invalid => {

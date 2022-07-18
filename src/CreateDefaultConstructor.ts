@@ -23,12 +23,16 @@ class CreateDefaultConstructor {
         this.classSymbol = findDeepestClassToken(srcSymbols, selection);
     }
 
+    IsInsideClass(){
+        return this.classSymbol !== undefined;
+    }
+
     GetContent(symbol: vscode.DocumentSymbol) {
         return this.source.getText(symbol.range);
     }
 
 
-    private CreateDefaultConstructor() {
+    CreateDefaultConstructor() {
         if (this.classSymbol) {
             var content = "";
             const name = this.classSymbol.name;
@@ -43,7 +47,7 @@ class CreateDefaultConstructor {
         }
     }
 
-    public async Create() {
+    async Create() {
 
         //create new work edits
         this.workEdits = new vscode.WorkspaceEdit();
@@ -75,4 +79,28 @@ export async function CreateCreateDefaultConstructor(): Promise<CreateDefaultCon
 }
 
 
+
+
+export class CreateDefaultConstructorCodeAction implements vscode.CodeActionProvider {
+
+    public static readonly providedCodeActionKinds = [
+        vscode.CodeActionKind.QuickFix,
+    ];
+
+    public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
+        const createConstructor = await CreateCreateDefaultConstructor();
+
+        if(!createConstructor.IsInsideClass()){
+            return undefined;
+        }
+
+        await createConstructor.CreateDefaultConstructor();
+
+        const fix = new vscode.CodeAction("Create Default Constructor", vscode.CodeActionKind.QuickFix);
+        fix.edit =  createConstructor.workEdits;
+        return [fix];
+
+    }
+
+}
 
