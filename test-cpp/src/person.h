@@ -1,8 +1,45 @@
 #pragma once
 
+
+
 namespace Anatomy {
 
-class Person {
+struct IRattle{
+    virtual void shake() = 0;
+
+};
+
+struct IHuman :  private IBaby<IRattle,IRattle> {
+    virtual void breath() = 0;
+};
+
+template<typename T, typename G>
+struct IBaby{
+    T t;
+    G g;
+    virtual void cry() = 0;
+};
+
+struct IPerson : public IHuman {
+
+
+};
+
+class Person : IPerson {
+
+virtual void breath(){}
+
+virtual void cry(){}
+
+};
+
+
+
+
+
+
+/*
+
     std::string name, george; 
     int age, height, *numberOfSiblings;
     std::vector<int> f;  
@@ -13,7 +50,13 @@ class Person {
         int id;
     } identity;
 
+
+    
+
     int getAge();
+
+    virtual void foo() = 0;
+    virtual void goo(){};
 
     void setAge(int age);
 
@@ -22,7 +65,7 @@ class Person {
     void getIdentity(Identity identity) { this->identity = identity; }
 
     std::string getName();
-};
+*/
 
 }  // namespace Anatomy
 

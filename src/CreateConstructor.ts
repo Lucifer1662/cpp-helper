@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { indexOfButIgnoreBrackets } from "./AddMissingFunctions";
 import { findDeepestClassTokenWithScope, GetAttributes } from "./Symbol";
 import { ActiveDoc, GetSymbolsDoc, ActivePos, RemoveSemi, extractAround } from './util';
 
@@ -51,7 +52,12 @@ class CreateConstructor {
                 //@ts-ignore
                 let content: string[] = hints.map(h => h.contents.map(w => w.value).filter(w => w.startsWith("```cpp"))).reduce((l, r) => [...l, ...r]);
                 if (content.length > 0 && !content[0].includes("<error-type>")) {
-                    const res = extractAround(content[0], "```cpp\n", "\n```").replace(new RegExp(this.classScope, 'g'), "");
+                    let res = extractAround(content[0], "```cpp\n", "\n```");
+                    if(res.startsWith("template")){
+                        res = res.replace("template", "")
+                        res = res.substring(indexOfButIgnoreBrackets(res, " ")+1)
+                    }
+                    res = res.replace(new RegExp(this.classScope, 'g'), "");
                     return res;
                 }
             } catch (e) {}

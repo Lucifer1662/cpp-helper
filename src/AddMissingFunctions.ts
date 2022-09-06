@@ -57,7 +57,7 @@ const brackIsOpen: any = {
     ")": false,
 }
 
-function indexOfButIgnoreBrackets(text: string, needle: string) {
+export function indexOfButIgnoreBrackets(text: string, needle: string) {
     const stack = [0, 0, 0, 0];
 
     for (let i = 0; i < text.length - needle.length; i++) {

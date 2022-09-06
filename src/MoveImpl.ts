@@ -90,7 +90,8 @@ class MoveImpl {
         } else {
             var fileContent = "";
             let symbol = this.srcSymbols[0];
-            const fileName = symbol.document.fileName.substring(symbol.document.fileName.replace("/", "\\").lastIndexOf("\\") + 1);
+            
+            const fileName = symbol.document.fileName.substring(symbol.document.fileName.replace(new RegExp("\/",'g'), "\\").lastIndexOf("\\") + 1);
             fileContent += `#include \"${fileName}\"\n\n`;
 
             let namespace = ""
