@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { indexOfButIgnoreBrackets } from "./AddMissingFunctions";
 import { findDeepestClassTokenWithScope, GetAttributes } from "./Symbol";
-import { ActiveDoc, GetSymbolsDoc, ActivePos, RemoveSemi, extractAround } from './util';
+import { ActiveDoc, GetSymbolsDoc, ActivePos, RemoveSemi, extractAround, getConfiguration } from './util';
 
 
 
@@ -159,6 +159,12 @@ export class CreateConstructorCodeAction implements vscode.CodeActionProvider {
     ];
 
     public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
+        if(getConfiguration().fastQuickFix){
+            const fix = new vscode.CodeAction("Create Constructor", vscode.CodeActionKind.QuickFix);
+            fix.command = { command: "cpp-helper.moveImplementation", title: "Create Constructor" } as vscode.Command;
+            return [fix];
+        }
+        
         const createConstructor = await CreateCreateConstructor();
 
         if(!createConstructor.IsInsideClass()){

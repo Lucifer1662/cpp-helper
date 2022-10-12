@@ -84,14 +84,14 @@ export function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "cpp-helper.addMissingVirtualFunctions",
-      (args) => {
-        addIncludeFor();
-      }
-    )
-  );
+  // context.subscriptions.push(
+  //   vscode.commands.registerCommand(
+  //     "cpp-helper.addMissingVirtualFunctions",
+  //     (args) => {
+  //       addIncludeFor();
+  //     }
+  //   )
+  // );
 
 
 

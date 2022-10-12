@@ -1,6 +1,6 @@
 import { TextEncoder } from "util";
 import * as vscode from "vscode";
-import { GetDocument, ActiveDoc, ActiveSelection, GetSymbolsDoc, FindIncludeLocation } from './util';
+import { GetDocument, ActiveDoc, ActiveSelection, GetSymbolsDoc, FindIncludeLocation, getConfiguration } from './util';
 
 
 
@@ -172,6 +172,12 @@ export class MoveToHeaderCodeAction implements vscode.CodeActionProvider {
     public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
         if (range.start.isEqual(range.end)) {
             return undefined;
+        }
+
+        if(getConfiguration().fastQuickFix){
+            const fix = new vscode.CodeAction("Move to header", vscode.CodeActionKind.QuickFix);
+            fix.command = { command: "cpp-helper.moveToHeader", title: "Move to header" } as vscode.Command;
+            return [fix];
         }
 
         const fix = new vscode.CodeAction("Move to header", vscode.CodeActionKind.QuickFix);

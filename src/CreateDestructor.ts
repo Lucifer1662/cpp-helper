@@ -63,7 +63,7 @@ export class CreateDestructorCodeAction implements vscode.CodeActionProvider {
     ];
 
     public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
-
+        
        const createConstructor = new CreateDestructor(source, await GetSymbolsDoc(source), range.start);
 
 

@@ -128,7 +128,8 @@ export const configName = 'lukes-cpp-helper';
 
 export interface Configuration{
     externalIncludeFolders: string[],
-    haveInContextMenu: string[]
+    haveInContextMenu: string[],
+    fastQuickFix: boolean,
 }
 
 export function getConfiguration(){
@@ -136,6 +137,7 @@ export function getConfiguration(){
     return {
         externalIncludeFolders: config.get<string[]>('externalIncludeFolders'),
         haveInContextMenu: config.get<string[]>('haveInContextMenu'),
+        fastQuickFix: config.get<boolean>('fastQuickFix'),
     } as Configuration
 }
 

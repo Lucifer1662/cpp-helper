@@ -116,6 +116,11 @@
             "type": "string"
           },
           "description": "What commands should be available in the context menu, by default they are all present. Reload to vscode for effects to take place. \n Valid items: moveImplementation, moveAllImplementation, createConstructor, createDefaultConstructors, moveToHeader, addIncludes, addIncludeFor "
+        },
+        "lukes-cpp-helper.fastQuickFix": {
+          "type": "boolean",
+          "default": false,
+          "description": "When false only commands that can be applied will be shown, however this will delay the appearance of the quick fix menu.\nWhen true, all quick fixes will be shown even if some are not applicable."
         }
       }
     }

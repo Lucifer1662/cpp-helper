@@ -238,7 +238,7 @@ export class AddMissingFunctionsCodeAction implements vscode.CodeActionProvider 
         fix.edit = adder.workEdits;
         fix.command = {
             command: "editor.action.goToLocations",
-            title: "Include All",
+            title: "Add base virtual functions",
             arguments: [source.uri, fix.edit.entries()[0][1][0].range.start, [], 'goto']
         } as vscode.Command;
 

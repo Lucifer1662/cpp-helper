@@ -1,6 +1,6 @@
 import { TextEncoder } from "util";
 import * as vscode from "vscode";
-import { GetDocument, ActiveDoc, GetSymbolsDoc, IsHeader, ActivePos } from './util';
+import { GetDocument, ActiveDoc, GetSymbolsDoc, IsHeader, ActivePos, getConfiguration } from './util';
 
 import { Symbol, findElligbleTokens, findToken, GetBody } from './Symbol';
 
@@ -297,6 +297,12 @@ export class MoveImplCodeAction implements vscode.CodeActionProvider {
     ];
 
     public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
+        
+        if(getConfiguration().fastQuickFix){
+            const fix = new vscode.CodeAction("Move to cpp", vscode.CodeActionKind.QuickFix);
+            fix.command = { command: "cpp-helper.moveImplementation", title: "Move to cpp" } as vscode.Command;
+            return [fix];
+        }
 
         const mover = await CreateMoveImplFrom(source, range.start);
         if (!mover.isSelectionFunction())

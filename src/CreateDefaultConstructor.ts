@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { findDeepestClassToken } from "./Symbol";
-import { ActiveDoc, GetSymbolsDoc, ActivePos, RemoveSemi } from './util';
+import { ActiveDoc, GetSymbolsDoc, ActivePos, RemoveSemi, getConfiguration } from './util';
 
 
 
@@ -88,6 +88,13 @@ export class CreateDefaultConstructorCodeAction implements vscode.CodeActionProv
     ];
 
     public async provideCodeActions(source: vscode.TextDocument, range: vscode.Range): Promise<vscode.CodeAction[] | undefined> {
+        if(getConfiguration().fastQuickFix){
+            const fix = new vscode.CodeAction("Create Default Constructor", vscode.CodeActionKind.QuickFix);
+            fix.command = { command: "cpp-helper.createDefaultConstructors", title: "Create Default Constructor" } as vscode.Command;
+            return [fix];
+        }
+        
+
         const createConstructor = await CreateCreateDefaultConstructor();
 
         if(!createConstructor.IsInsideClass()){
