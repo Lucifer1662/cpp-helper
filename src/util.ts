@@ -130,6 +130,7 @@ export interface Configuration{
     externalIncludeFolders: string[],
     haveInContextMenu: string[],
     fastQuickFix: boolean,
+    cppFileExtension: string,
 }
 
 export function getConfiguration(){
@@ -138,6 +139,7 @@ export function getConfiguration(){
         externalIncludeFolders: config.get<string[]>('externalIncludeFolders'),
         haveInContextMenu: config.get<string[]>('haveInContextMenu'),
         fastQuickFix: config.get<boolean>('fastQuickFix'),
+        cppFileExtension: config.get<string>('cppFileExtension'),
     } as Configuration
 }
 

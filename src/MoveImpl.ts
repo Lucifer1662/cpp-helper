@@ -42,30 +42,6 @@ class MoveImpl {
         try {
             return this.destination = await GetDocument(this.destinationUri);
         } catch (e) {
-            // var fileContent = "";
-            // let symbol = this.srcSymbols[0];
-            // const fileName = symbol.document.fileName.substring(symbol.document.fileName.replace("/", "\\").lastIndexOf("\\") + 1);
-            // fileContent += `#include \"${fileName}\"\n\n`;
-
-            // let namespace = ""
-            // symbol.parentChain.forEach(p => {
-            //     if (p.kind == 2) {
-            //         if (namespace != "") namespace += "::"
-            //         namespace += p.name
-            //     }
-            // });
-
-            // if (namespace !== "") {
-            //     fileContent += `namespace ${namespace}{\n}\n`
-            // }
-
-
-            // var enc = new TextEncoder();
-            // await vscode.workspace.fs.writeFile(
-            //     vscode.Uri.file(this.destinationUri),
-            //     enc.encode(fileContent)
-            // );
-
 
         }
 
@@ -83,36 +59,8 @@ class MoveImpl {
         }
     }
 
-    private CopyToDest(symbol: Symbol) {
-        let pos = { insertAt: new vscode.Position(2, 0), scopeUnFinished: [] } as DeepReturn;
-        if (this.destination) {
-            pos = InsertionPosition(this.destination, this.dstSymbols, symbol.scope);
-        } else {
-            var fileContent = "";
-            let symbol = this.srcSymbols[0];
-            
-            const fileName = symbol.document.fileName.substring(symbol.document.fileName.replace(new RegExp("\/",'g'), "\\").lastIndexOf("\\") + 1);
-            fileContent += `#include \"${fileName}\"\n\n`;
+    private CopyToDest(symbol: Symbol, {insertAt, scopeUnFinished} : DeepReturn) {
 
-            let namespace = ""
-            symbol.parentChain.forEach(p => {
-                if (p.kind == 2) {
-                    if (namespace != "") namespace += "::"
-                    namespace += p.name
-                }
-            });
-
-            if (namespace !== "") {
-                fileContent += `namespace ${namespace}{\n}\n`
-            }
-
-            this.workEdits.createFile(vscode.Uri.file(this.destinationUri));
-            this.workEdits.insert(vscode.Uri.file(this.destinationUri), new vscode.Position(0, 0), fileContent);
-
-        }
-
-
-        const { insertAt, scopeUnFinished } = pos;
 
         var content = "";
 
@@ -162,8 +110,44 @@ class MoveImpl {
 
         await this.GetDestinationSymbols();
 
+        let allNamesSpacePositions : {[key:string]: number} = {"":2};
+
+        if (!this.destination) {
+            this.workEdits.createFile(vscode.Uri.file(this.destinationUri));
+
+            var fileContent = "";
+            let symbol = this.srcSymbols[0];
+            
+            const fileName = symbol.document.fileName.substring(symbol.document.fileName.replace(new RegExp("\/",'g'), "\\").lastIndexOf("\\") + 1);
+            fileContent += `#include \"${fileName}\"\n\n`;
+            this.workEdits.insert(vscode.Uri.file(this.destinationUri), new vscode.Position(0, 0), fileContent);
+
+            
+            let currentPosition = 4;
+            this.srcSymbols.forEach((symbol=>{
+                let namespace = ConcatNamespaceForSymbol(symbol);
+                if(!allNamesSpacePositions[namespace]){
+                    allNamesSpacePositions[namespace] = currentPosition;
+                    this.workEdits.insert(vscode.Uri.file(this.destinationUri), new vscode.Position(currentPosition, 0), `namespace ${namespace}{\n`);
+                    this.workEdits.insert(vscode.Uri.file(this.destinationUri), new vscode.Position(currentPosition+1, 0), '}\n');
+                    currentPosition += 2;
+                }
+            }));
+        }
+
+
         //copy to cpp
-        this.srcSymbols.forEach(symbol => this.CopyToDest(symbol))
+        this.srcSymbols.forEach(symbol => {
+            if(this.destination){
+                this.CopyToDest(symbol, InsertionPosition(this.dstSymbols, symbol.scope, this.destination));
+            }else{
+                //scope is always finished when no file exists, as we would create it
+                this.CopyToDest(symbol, {
+                    insertAt: new vscode.Position(allNamesSpacePositions[ConcatNamespaceForSymbol(symbol)],0),
+                    scopeUnFinished: []
+                });
+            }
+        })
         //remove from header
         this.srcSymbols.forEach(symbol => this.RemoveImplFromDeclaration(symbol))
 
@@ -171,10 +155,8 @@ class MoveImpl {
 
     public async Move() {
         await this.MoveButDoNotApply();
-
         //apply edits
-        vscode.workspace.applyEdit(this.workEdits);
-
+        await vscode.workspace.applyEdit(this.workEdits);
     }
 
 }
@@ -194,7 +176,7 @@ async function CreateMoveImplFrom(source: vscode.TextDocument, selection: vscode
         if (s) {
             symbols = [s]
         }
-        const uri = source.uri.path.substring(0, source.uri.path.lastIndexOf(".")) + ".cpp";
+        const uri = source.uri.path.substring(0, source.uri.path.lastIndexOf(".")) + "." + getConfiguration().cppFileExtension;
         return new MoveImpl(source, uri, symbols);
     } else
         throw "no active text editor window";
@@ -226,7 +208,7 @@ export async function CreateMoveImpl(onlySelection: boolean): Promise<MoveImpl> 
             symbols = findElligbleTokens(await GetSymbolsDoc(source), source);
         }
 
-        const uri = source.uri.path.substring(0, source.uri.path.lastIndexOf(".")) + ".cpp";
+        const uri = source.uri.path.substring(0, source.uri.path.lastIndexOf(".")) + "." + getConfiguration().cppFileExtension;
         return new MoveImpl(source, uri, symbols);
     } else
         throw "no active text editor window";
@@ -240,20 +222,34 @@ interface DeepReturn {
     scopeUnFinished: string[];
 }
 
+function ConcatNamespaceForSymbol(symbol: Symbol){
+    let namespace = ""
+    symbol.parentChain.forEach(p => {
+        if (p.kind == 2) {
+            if (namespace != "") namespace += "::"
+            namespace += p.name
+        }
+    });
+    return namespace;
+}
 
-function InsertionPosition(document: vscode.TextDocument, symbols: vscode.DocumentSymbol[],
-    scopes: string[]): DeepReturn {
 
-    var ret = findDeepestNamespace(symbols, scopes);
+function InsertionPosition( symbols: vscode.DocumentSymbol[],
+    scopes: string[], document?: vscode.TextDocument): DeepReturn {
+    if(document){
+        var ret = findDeepestNamespace(symbols, scopes);
 
-    if (!ret) {
-        return {
-            insertAt: new vscode.Position(document.lineCount + 1, 0),
-            scopeUnFinished: scopes
-        };
-    } else {
-        ret.insertAt = document.positionAt(document.offsetAt(ret.insertAt) - 1);
-        return ret;
+        if (!ret) {
+            return {
+                insertAt: new vscode.Position(document.lineCount + 1, 0),
+                scopeUnFinished: scopes
+            };
+        } else {
+            ret.insertAt = document.positionAt(document.offsetAt(ret.insertAt) - 1);
+            return ret;
+        }
+    }else{
+        return { insertAt: new vscode.Position(2, 0), scopeUnFinished: scopes } as DeepReturn;
     }
 }
 

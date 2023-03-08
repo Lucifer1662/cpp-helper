@@ -2,7 +2,7 @@
   "name": "lukes-cpp-helper",
   "displayName": "Luke's C++ helper",
   "description": "helps write cpp code",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "repository": "https://github.com/Lucifer1662/cpp-helper",
   "publisher": "personal-luke",
   "engines": {
@@ -103,7 +103,9 @@
       "properties": {
         "lukes-cpp-helper.externalIncludeFolders": {
           "type": "array",
-          "default": ["include"],
+          "default": [
+            "include"
+          ],
           "items": {
             "type": "string"
           },
@@ -111,7 +113,15 @@
         },
         "lukes-cpp-helper.haveInContextMenu": {
           "type": "array",
-          "default": ["moveImplementation", "moveAllImplementation", "createConstructor", "createDefaultConstructors", "moveToHeader", "addIncludes", "addIncludeFor"],
+          "default": [
+            "moveImplementation",
+            "moveAllImplementation",
+            "createConstructor",
+            "createDefaultConstructors",
+            "moveToHeader",
+            "addIncludes",
+            "addIncludeFor"
+          ],
           "items": {
             "type": "string"
           },
@@ -121,6 +131,11 @@
           "type": "boolean",
           "default": false,
           "description": "When false only commands that can be applied will be shown, however this will delay the appearance of the quick fix menu.\nWhen true, all quick fixes will be shown even if some are not applicable."
+        },
+        "lukes-cpp-helper.cppFileExtension": {
+          "type": "string",
+          "default": "cpp",
+          "description": "When creating or looking for c++ files will use cppFileExtension as the file extension, change to cc if using .cc as file extension style"
         }
       }
     }
@@ -147,8 +162,6 @@
     "mocha": "^10.0.0",
     "typescript": "^4.7.2",
     "node-fetch": "^2.6.1"
-
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
